@@ -77,7 +77,7 @@ export const StyledLink = styled.a`
   text-decoration: none;
 `;
 
-const Card = ({CONFIG : { NETWORK , NFT_NAME , GAS_LIMIT } , ItemOption }) => {
+const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLACE_LINK , NETWORK , NFT_NAME , GAS_LIMIT } , ItemOption }) => {
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
     
@@ -101,7 +101,7 @@ const Card = ({CONFIG : { NETWORK , NFT_NAME , GAS_LIMIT } , ItemOption }) => {
             .mint([])
             .send({
                 gasLimit: String(totalGasLimit),
-                to:  ItemOption.CONTRACT_ADDRESS,
+                to:  CONTRACT_ADDRESS,
                 from: blockchain.account,
                 value: totalCostWei,
             })
@@ -203,8 +203,8 @@ const Card = ({CONFIG : { NETWORK , NFT_NAME , GAS_LIMIT } , ItemOption }) => {
                     color: "var(--primary-text)",
                 }}
             >
-                <StyledLink target={"_blank"} href={ ItemOption.SCAN_LINK}>
-                    {truncate( ItemOption.CONTRACT_ADDRESS, 24)}
+                <StyledLink target={"_blank"} href={ SCAN_LINK}>
+                    {truncate( CONTRACT_ADDRESS, 24)}
                 </StyledLink>
             </s.TextDescription>
             <span
@@ -227,10 +227,10 @@ const Card = ({CONFIG : { NETWORK , NFT_NAME , GAS_LIMIT } , ItemOption }) => {
                         margin: "5px",
                     }}
                     onClick={(e) => {
-                        window.open(ItemOption.MARKETPLACE_LINK, "_blank");
+                        window.open(MARKETPLACE_LINK, "_blank");
                     }}
                 >
-                    {ItemOption.MARKETPLACE}
+                    {MARKETPLACE}
                 </StyledButton>
             </span>
             <s.SpacerSmall />
@@ -247,8 +247,8 @@ const Card = ({CONFIG : { NETWORK , NFT_NAME , GAS_LIMIT } , ItemOption }) => {
                         You can still find {NFT_NAME} on
                     </s.TextDescription>
                     <s.SpacerSmall />
-                    <StyledLink target={"_blank"} href={ItemOption.MARKETPLACE_LINK}>
-                        {ItemOption.MARKETPLACE}
+                    <StyledLink target={"_blank"} href={MARKETPLACE_LINK}>
+                        {MARKETPLACE}
                     </StyledLink>
                 </>
             ) : (

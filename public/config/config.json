@@ -1,5 +1,9 @@
 {
   "CONFIG": {
+    "CONTRACT_ADDRESS": "0x9dd13E8Fce9e6dE73D2Df9e3411C93F04E28AF2B",
+    "SCAN_LINK": "https://etherscan.io/address/0x9dd13e8fce9e6de73d2df9e3411c93f04e28af2b",
+    "MARKETPLACE": "Opeansea",
+    "MARKETPLACE_LINK": "https://opensea.io/collection/",
     "NETWORK": {
       "NAME": "Ethereum Mainnet",
       "SYMBOL": "ETH",
@@ -10,12 +14,7 @@
     "SHOW_BACKGROUND": true
   },
   "ITEMS": [
-    {
-      "CONTRACT_ADDRESS": "0x9dd13E8Fce9e6dE73D2Df9e3411C93F04E28AF2B",
-      "SCAN_LINK": "https://etherscan.io/address/0x9dd13e8fce9e6de73d2df9e3411c93f04e28af2b",
-      "MARKETPLACE": "Opeansea",
-      "MARKETPLACE_LINK": "https://opensea.io/collection/",
-      "IMAGE": "IMG-1.png",
+    { "IMAGE": "IMG-1.png",
       "SYMBOL": "The Sentinel - 1",
       "MAX_SUPPLY": 1200,
       "mintedCount": 468,
@@ -24,11 +23,7 @@
       "DISPLAY_COST": 0.08
     },
     {
-      "CONTRACT_ADDRESS": "0x9dd13E8Fce9e6dE73D2Df9e3411C93F04E28AF2B",
-      "SCAN_LINK": "https://etherscan.io/address/0x9dd13e8fce9e6de73d2df9e3411c93f04e28af2b",
-      "MARKETPLACE": "Opeansea",
-      "MARKETPLACE_LINK": "https://opensea.io/collection/",
-      "IMAGE": "IMG-2.png",
+     "IMAGE": "IMG-2.png",
       "SYMBOL": "The Sentinel - 2",
       "MAX_SUPPLY": 450,
       "mintedCount": 153,
@@ -37,10 +32,6 @@
       "DISPLAY_COST": 1
     },
     {
-      "CONTRACT_ADDRESS": "0x9dd13E8Fce9e6dE73D2Df9e3411C93F04E28AF2B",
-      "SCAN_LINK": "https://etherscan.io/address/0x9dd13e8fce9e6de73d2df9e3411c93f04e28af2b",
-      "MARKETPLACE": "Opeansea",
-      "MARKETPLACE_LINK": "https://opensea.io/collection/",
       "IMAGE": "IMG-3.png",
       "SYMBOL": "The Sentinel - 3",
       "MAX_SUPPLY": 35,
