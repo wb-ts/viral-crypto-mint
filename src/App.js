@@ -4,7 +4,6 @@ import * as s from "./styles/globalStyles";
 import styled from "styled-components";
 import Card from "./components/card";
 
-
 export const StyledLogo = styled.img`
   width: 240px;
   @media (min-width: 767px) {
@@ -71,13 +70,17 @@ function App() {
       <s.Container
         flex={1}
         ai={"center"}
-        style={{ padding: 12, backgroundColor: "var(--base)" }}
+        id="main" 
+        style={{ 
+          padding: 12, 
+          backgroundColor: "var(--base)"
+        }}
       >
         <s.SpacerSmall />
         <s.SpacerSmall />
         <s.SpacerSmall />
         <a href={CONFIG.MARKETPLACE_LINK}>
-          <StyledLogo alt={"logo"} src={"/config/images/logo.png"} />
+          <StyledLogo alt={"logo"} id="logo" src={"/config/images/logo.png"} />
         </a>
         <s.SpacerMedium />
         <s.Container jc={"center"} ai={"center"} style={{ width: "70%", maxWidth: "700px" }}>
