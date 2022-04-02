@@ -134,8 +134,11 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
 
     const incrementMintAmount = () => {
         let newMintAmount = mintAmount + 1;
-        if (newMintAmount > 2) {
+        if (newMintAmount > 2 && ItemOption.SYMBOL == "Kimono" ) {
             newMintAmount = 2;
+        }
+        if (newMintAmount > ItemOption.MAX_SUPPLY - ItemOption.mintedCount ) {
+            newMintAmount = ItemOption.MAX_SUPPLY - ItemOption.mintedCount;
         }
         setMintAmount(newMintAmount);
     };
