@@ -2,7 +2,7 @@
   "CONFIG": {
     "CONTRACT_ADDRESS": "0x9dd13E8Fce9e6dE73D2Df9e3411C93F04E28AF2B",
     "SCAN_LINK": "https://etherscan.io/address/0x9dd13e8fce9e6de73d2df9e3411c93f04e28af2b",
-    "MARKETPLACE": "Opeansea",
+    "MARKETPLACE": "Opensea",
     "MARKETPLACE_LINK": "https://opensea.io/collection/",
     "NETWORK": {
       "NAME": "Ethereum Mainnet",
@@ -14,30 +14,30 @@
     "SHOW_BACKGROUND": true
   },
   "ITEMS": [
-    { "IMAGE": "IMG-1.png",
-      "SYMBOL": "The Sentinel - 1",
-      "MAX_SUPPLY": 1200,
-      "mintedCount": 468,
+    { "MEDIA": "Kimono.mp4",
+      "SYMBOL": "Kimono",
+      "MAX_SUPPLY": 2,
+      "mintedCount": 0,
       "NFT_ID": 0,
       "WEI_COST": 80000000000000000,
       "DISPLAY_COST": 0.08
     },
     {
-     "IMAGE": "IMG-2.png",
-      "SYMBOL": "The Sentinel - 2",
+     "MEDIA": "katana.mp4",
+      "SYMBOL": "Katana",
       "MAX_SUPPLY": 450,
       "mintedCount": 153,
       "NFT_ID": 0,
-      "WEI_COST": 80000000000000000,
+      "WEI_COST": 1000000000000000000,
       "DISPLAY_COST": 1
     },
     {
-      "IMAGE": "IMG-3.png",
-      "SYMBOL": "The Sentinel - 3",
+      "MEDIA": "kabuto.mp4",
+      "SYMBOL": "Kabuto",
       "MAX_SUPPLY": 35,
       "mintedCount": 23,
       "NFT_ID": 0,
-      "WEI_COST": 80000000000000000,
+      "WEI_COST": 5000000000000000000,
       "DISPLAY_COST": 5
     }
   ]

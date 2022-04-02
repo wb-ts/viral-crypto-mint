@@ -71,8 +71,7 @@ function App() {
       <s.Container
         flex={1}
         ai={"center"}
-        style={{ padding: 12, backgroundColor: "var(--primary)" }}
-        image={CONFIG.SHOW_BACKGROUND ? "/config/images/wallpaper.jpg" : null}
+        style={{ padding: 12, backgroundColor: "var(--base)" }}
       >
         <s.SpacerSmall />
         <s.SpacerSmall />

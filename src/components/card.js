@@ -51,9 +51,9 @@ export const StyledRoundButton = styled.button`
   }
 `;
 
-export const StyledImg = styled.img`
+export const StyledVideo = styled.video`
   box-shadow: 0px 5px 11px 2px rgba(0, 0, 0, 0.7);
-  border: 4px solid var(--secondary);
+  border: 4px solid var(--primary);
   background-color: var(--accent);
   border-radius: none;
   width: 360px;
@@ -73,7 +73,7 @@ export const StyledImg = styled.img`
 `;
 
 export const StyledLink = styled.a`
-  color: var(--secondary);
+  color: var(--primary);
   text-decoration: none;
 `;
 
@@ -91,7 +91,7 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
             cost = ItemOption.WEI_COST;
         }
         let gasLimit = GAS_LIMIT;
-        let totalCostWei = String(cost);
+        let totalCostWei = String(cost * mintAmount);
         let totalGasLimit = String(gasLimit);
         console.log("Cost: ", totalCostWei);
         console.log("Gas limit: ", totalGasLimit);
@@ -133,8 +133,8 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
 
     const incrementMintAmount = () => {
         let newMintAmount = mintAmount + 1;
-        if (newMintAmount > 3) {
-            newMintAmount = 3;
+        if (newMintAmount > ItemOption.MAX_SUPPLY - ItemOption.mintedCount) {
+            newMintAmount = ItemOption.MAX_SUPPLY - ItemOption.mintedCount;
         }
         setMintAmount(newMintAmount);
     };
@@ -161,14 +161,16 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
                 backgroundColor: "var(--accent)",
                 padding: 24,
                 borderRadius: 24,
-                border: "4px solid var(--secondary)",
+                border: "4px solid var(--primary)",
                 boxShadow: "0px 5px 11px 2px rgba(0,0,0,0.7)",
                 maxWidth: "700px",
                 margin: "12px"
             }}
         >
             <s.Container flex={1} jc={"center"} ai={"center"}>
-                <StyledImg alt={"example"} src={`/config/images/${ItemOption.IMAGE}`} />
+                <StyledVideo loop controls >
+                    <source src={`/config/images/${ItemOption.MEDIA}`} type="video/mp4"/>
+                </StyledVideo>
             </s.Container>
             <s.SpacerSmall />
             <s.TextTitle
