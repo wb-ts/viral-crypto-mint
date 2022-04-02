@@ -16,7 +16,7 @@
   "ITEMS": [
     { "MEDIA": "Kimono.gif",
       "SYMBOL": "Kimono",
-      "MAX_SUPPLY": 2,
+      "MAX_SUPPLY": 10000,
       "mintedCount": 0,
       "NFT_ID": 0,
       "WEI_COST": 80000000000000000,

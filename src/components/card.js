@@ -133,8 +133,8 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
 
     const incrementMintAmount = () => {
         let newMintAmount = mintAmount + 1;
-        if (newMintAmount > ItemOption.MAX_SUPPLY - ItemOption.mintedCount) {
-            newMintAmount = ItemOption.MAX_SUPPLY - ItemOption.mintedCount;
+        if (newMintAmount > 2) {
+            newMintAmount = 2;
         }
         setMintAmount(newMintAmount);
     };
