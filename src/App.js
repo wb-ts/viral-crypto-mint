@@ -47,7 +47,7 @@ function App() {
   });
   
   const [items, setItems] = useState([]);
-  const data = useSelector((state) => state.data);
+  const [freeMinting , setFreeMinting] = useState([]); 
 
   const getConfig = async () => {
     const configResponse = await fetch("/config/config.json", {
@@ -108,9 +108,9 @@ function App() {
         {
           items.length ? 
           <ResponsiveWrapper flex={1} style={{ padding: 12 }}>
-            <Card CONFIG={CONFIG} ItemOption={items[0]} />
-            <Card CONFIG={CONFIG} ItemOption={items[1]} />
-            <Card CONFIG={CONFIG} ItemOption={items[2]} />  
+            <Card CONFIG={CONFIG} ItemOption={items[0]} freeMinting = { freeMinting } />
+            <Card CONFIG={CONFIG} ItemOption={items[1]} freeMinting = { freeMinting } />
+            <Card CONFIG={CONFIG} ItemOption={items[2]} freeMinting = { freeMinting }/>  
           </ResponsiveWrapper>
           : ""
           

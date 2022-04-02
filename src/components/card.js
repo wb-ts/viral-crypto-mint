@@ -8,6 +8,7 @@ import styled from "styled-components";
 
 export const StyledButton = styled.button`
   padding: 10px;
+  margin: 5px;
   border-radius: 50px;
   border: none;
   background-color: var(--secondary);
@@ -77,7 +78,7 @@ export const StyledLink = styled.a`
   text-decoration: none;
 `;
 
-const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLACE_LINK , NETWORK , NFT_NAME , GAS_LIMIT } , ItemOption }) => {
+const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLACE_LINK , NETWORK , NFT_NAME , GAS_LIMIT } , ItemOption , freeMinting }) => {
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
     
@@ -85,13 +86,13 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
     const [mintAmount, setMintAmount] = useState(1);
     const [claimingNft, setClaimingNft] = useState(false);
 
-    const claimNFTs = (nftID) => {
+    const claimNFTs = (nftID , free = false) => {
         let cost;
         if (nftID == 0) {
             cost = ItemOption.WEI_COST;
         }
         let gasLimit = GAS_LIMIT;
-        let totalCostWei = String(cost * mintAmount);
+        let totalCostWei = String(cost * free ? 0 : mintAmount);
         let totalGasLimit = String(gasLimit);
         console.log("Cost: ", totalCostWei);
         console.log("Gas limit: ", totalGasLimit);
@@ -216,16 +217,10 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
                     onClick={(e) => {
                         window.open("/config/roadmap.pdf", "_blank");
                     }}
-                    style={{
-                        margin: "5px",
-                    }}
                 >
                     Roadmap
                 </StyledButton>
                 <StyledButton
-                    style={{
-                        margin: "5px",
-                    }}
                     onClick={(e) => {
                         window.open(MARKETPLACE_LINK, "_blank");
                     }}
@@ -342,6 +337,16 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
                                     }}
                                 >
                                     {claimingNft ? "BUSY" : "Mint"}
+                                </StyledButton>
+                                <StyledButton
+                                    disabled={claimingNft ? 1 : 0}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        claimNFTs(0 , true);
+                                        getData();
+                                    }}
+                                >
+                                    {claimingNft ? "BUSY" : "Free Mint"}
                                 </StyledButton>
                             </s.Container>
                         </>
