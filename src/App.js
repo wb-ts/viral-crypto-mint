@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-
+import { useDispatch, useSelector } from "react-redux";
 import * as s from "./styles/globalStyles";
 import styled from "styled-components";
 import Card from "./components/card";
@@ -18,6 +18,17 @@ export const CardGroup = styled.div`
   width: 90%;
   display: flex;
 `
+export const ResponsiveWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  @media (max-width: 950px) {
+    flex-direction: column;
+  }
+`;
 
 function App() {
 
@@ -27,19 +38,18 @@ function App() {
     NETWORK: {
       NAME: "",
       SYMBOL: "",
-      ID: 0,
+      ID: 0
     },
     NFT_NAME: "",
-    SYMBOL: "",
-    MAX_SUPPLY: 1,
-    WEI_COST: 0,
-    DISPLAY_COST: 0,
-    GAS_LIMIT: 0,
     MARKETPLACE: "",
     MARKETPLACE_LINK: "",
-    SHOW_BACKGROUND: false,
+    GAS_LIMIT: 0,
+    SHOW_BACKGROUND: false
   });
   
+  const [items, setItems] = useState([]);
+  const data = useSelector((state) => state.data);
+
   const getConfig = async () => {
     const configResponse = await fetch("/config/config.json", {
       headers: {
@@ -47,8 +57,10 @@ function App() {
         Accept: "application/json",
       },
     });
-    const config = await configResponse.json();
-    SET_CONFIG(config);
+    const result = await configResponse.json();
+    console.log(result.ITEMS);
+    SET_CONFIG(result.CONFIG);
+    setItems(result.ITEMS);
   };
   
   useEffect(() => {
@@ -92,11 +104,18 @@ function App() {
           </s.TextDescription>
           <s.SpacerSmall />
         </s.Container>
-        <CardGroup className="row">
-          <Card CONFIG={CONFIG} className="col-lg-4 col-md-4 col-sm-12 col-xd-12"/>
-          <Card CONFIG={CONFIG} className="col-lg-4 col-md-4 col-sm-12 col-xd-12"/>
-          <Card CONFIG={CONFIG} className="col-lg-4 col-md-4 col-sm-12 col-xd-12"/>  
-        </CardGroup>
+        {
+          items.length ? 
+          <ResponsiveWrapper flex={1} style={{ padding: 12 }}>
+            <Card CONFIG={CONFIG} ItemOption={items[0]} />
+            <Card CONFIG={CONFIG} ItemOption={items[1]} />
+            <Card CONFIG={CONFIG} ItemOption={items[2]} />  
+          </ResponsiveWrapper>
+          : ""
+          
+        }
+        
+        
         <s.SpacerLarge />
         <s.SpacerLarge />
         <s.Container jc={"center"} ai={"center"} style={{ width: "70%" }}>
