@@ -58,7 +58,6 @@ function App() {
       },
     });
     const result = await configResponse.json();
-    console.log(result.ITEMS);
     SET_CONFIG(result.CONFIG);
     setItems(result.ITEMS);
   };
