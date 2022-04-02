@@ -57,6 +57,9 @@ export const StyledImg = styled.img`
   background-color: var(--accent);
   border-radius: none;
   width: 360px;
+  @media (max-width: 600px) {
+      width: 90%;
+  }
   @media (min-width: 950px) {
     width: 220px;
   }
