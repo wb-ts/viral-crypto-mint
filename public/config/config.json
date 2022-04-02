@@ -14,7 +14,7 @@
     "SHOW_BACKGROUND": true
   },
   "ITEMS": [
-    { "MEDIA": "Kimono.mp4",
+    { "MEDIA": "Kimono.gif",
       "SYMBOL": "Kimono",
       "MAX_SUPPLY": 2,
       "mintedCount": 0,
@@ -23,7 +23,7 @@
       "DISPLAY_COST": 0.08
     },
     {
-     "MEDIA": "katana.mp4",
+     "MEDIA": "katana.gif",
       "SYMBOL": "Katana",
       "MAX_SUPPLY": 450,
       "mintedCount": 153,
@@ -32,7 +32,7 @@
       "DISPLAY_COST": 1
     },
     {
-      "MEDIA": "kabuto.mp4",
+      "MEDIA": "kabuto.gif",
       "SYMBOL": "Kabuto",
       "MAX_SUPPLY": 35,
       "mintedCount": 23,

@@ -51,7 +51,7 @@ export const StyledRoundButton = styled.button`
   }
 `;
 
-export const StyledVideo = styled.video`
+export const StyledImg = styled.img`
   box-shadow: 0px 5px 11px 2px rgba(0, 0, 0, 0.7);
   border: 4px solid var(--primary);
   background-color: var(--accent);
@@ -168,9 +168,7 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
             }}
         >
             <s.Container flex={1} jc={"center"} ai={"center"}>
-                <StyledVideo loop controls >
-                    <source src={`/config/images/${ItemOption.MEDIA}`} type="video/mp4"/>
-                </StyledVideo>
+                <StyledImg src={`/config/images/${ItemOption.MEDIA}`} alt=""/>
             </s.Container>
             <s.SpacerSmall />
             <s.TextTitle
