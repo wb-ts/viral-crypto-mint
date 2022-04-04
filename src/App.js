@@ -31,22 +31,8 @@ export const ResponsiveWrapper = styled.div`
 
 function App() {
 
-  const [CONFIG, SET_CONFIG] = useState({
-    CONTRACT_ADDRESS: "",
-    SCAN_LINK: "",
-    NETWORK: {
-      NAME: "",
-      SYMBOL: "",
-      ID: 0
-    },
-    NFT_NAME: "",
-    MARKETPLACE: "",
-    MARKETPLACE_LINK: "",
-    GAS_LIMIT: 0,
-    SHOW_BACKGROUND: false
-  });
-  
-  const [items, setItems] = useState([]);
+  const [CONFIG, SET_CONFIG] = useState([]);
+  const MORALIS_API_KEY = '78KU4WCpkqjIAkGjSKbtRuYg7rjbfnEQkMtt6fLbVFh7chlqi3courfnXFjo461K';
   const [freeMinting , setFreeMinting] = useState([]); 
 
   const getConfig = async () => {
@@ -57,8 +43,8 @@ function App() {
       },
     });
     const result = await configResponse.json();
-    SET_CONFIG(result.CONFIG);
-    setItems(result.ITEMS);
+
+    SET_CONFIG(result);
   };
   
   useEffect(() => {
@@ -79,7 +65,7 @@ function App() {
         <s.SpacerSmall />
         <s.SpacerSmall />
         <s.SpacerSmall />
-        <a href={CONFIG.MARKETPLACE_LINK}>
+        <a href={"/"}>
           <StyledLogo alt={"logo"} id="logo" src={"/config/images/logo.png"} />
         </a>
         <s.SpacerMedium />
@@ -105,18 +91,13 @@ function App() {
           </s.TextDescription>
           <s.SpacerSmall />
         </s.Container>
-        {
-          items.length ? 
           <ResponsiveWrapper flex={1} style={{ padding: 12 }}>
-            <Card CONFIG={CONFIG} ItemOption={items[0]} freeMinting = { freeMinting } />
-            <Card CONFIG={CONFIG} ItemOption={items[1]} freeMinting = { freeMinting } />
-            <Card CONFIG={CONFIG} ItemOption={items[2]} freeMinting = { freeMinting }/>  
+            {
+              CONFIG.length && CONFIG.map((item , index) => {
+                return <Card key={index} CONFIG={item} index={index} freeMinting = { freeMinting } />
+              })
+            } 
           </ResponsiveWrapper>
-          : ""
-          
-        }
-        
-        
         <s.SpacerLarge />
         <s.SpacerLarge />
         <s.Container jc={"center"} ai={"center"} style={{ width: "70%" }}>
@@ -127,7 +108,7 @@ function App() {
             }}
           >
             Please make sure you are connected to the right network (
-            {CONFIG.NETWORK.NAME} Mainnet) and the correct address. Please note:
+            RIkeby Test Network ) and the correct address. Please note:
             Once you make the purchase, you cannot undo this action.
           </s.TextDescription>
           <s.SpacerSmall />
@@ -137,7 +118,7 @@ function App() {
               color: "var(--primary-text)",
             }}
           >
-            We have set the gas limit to {CONFIG.GAS_LIMIT} for the contract to
+            We have set the gas limit to {3000000} for the contract to
             successfully mint your NFT. We recommend that you don't lower the
             gas limit.
           </s.TextDescription>

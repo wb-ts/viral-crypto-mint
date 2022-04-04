@@ -31,23 +31,24 @@ const updateAccountRequest = (payload) => {
   };
 };
 
-export const connect = () => {
+export const connect = (index) => {
   return async (dispatch) => {
     dispatch(connectRequest());
-    const abiResponse = await fetch("/config/abi.json", {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    });
-    const abi = await abiResponse.json();
     const configResponse = await fetch("/config/config.json", {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
     });
-    const result = await configResponse.json();
+    const CONFIG = await configResponse.json();
+    const abiResponse = await fetch(`/config/${CONFIG[index].SYMBOL}_abi.json`, {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+    const abi = await abiResponse.json();
+
     const { ethereum } = window;
     const metamaskIsInstalled = ethereum && ethereum.isMetaMask;
     if (metamaskIsInstalled) {
@@ -60,10 +61,10 @@ export const connect = () => {
         const networkId = await ethereum.request({
           method: "net_version",
         });
-        if (networkId == result.CONFIG.NETWORK.ID) {
+        if (networkId == CONFIG[index].NETWORK.ID) {
           const SmartContractObj = new Web3EthContract(
             abi,
-            result.CONFIG.CONTRACT_ADDRESS
+            CONFIG[index].CONTRACT_ADDRESS
           );
           dispatch(
             connectSuccess({
@@ -81,7 +82,7 @@ export const connect = () => {
           });
           // Add listeners end
         } else {
-          dispatch(connectFailed(`Change network to ${result.CONFIG.NETWORK.NAME}.`));
+          dispatch(connectFailed(`Change network to ${CONFIG[index].NETWORK.NAME}.`));
         }
       } catch (err) {
         dispatch(connectFailed("Something went wrong."));

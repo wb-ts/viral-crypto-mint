@@ -1,44 +1,62 @@
-{
-  "CONFIG": {
-    "CONTRACT_ADDRESS": "0x9dd13E8Fce9e6dE73D2Df9e3411C93F04E28AF2B",
-    "SCAN_LINK": "https://etherscan.io/address/0x9dd13e8fce9e6de73d2df9e3411c93f04e28af2b",
+[
+  {
+    "CONTRACT_ADDRESS": "0x6CAFFd1fd77c0b3207B5025038D7A7F1e8946e6a",
+    "SCAN_LINK": "https://rinkeby.etherscan.io/address/0x5a32D2dD842FD8a5a33d923d29E53a5D56cda0De",
     "MARKETPLACE": "Opensea",
     "MARKETPLACE_LINK": "https://opensea.io/collection/",
     "NETWORK": {
-      "NAME": "Ethereum Mainnet",
+      "NAME": "Rinkeby Test Network",
       "SYMBOL": "ETH",
-      "ID": 1
+      "ID": 4
     },
-    "NFT_NAME": "Viral Crypto Sentinel",
-    "GAS_LIMIT": 285000,
-    "SHOW_BACKGROUND": true
+    "NFT_NAME": "Shiburai",
+    "GAS_LIMIT": 3000000,
+    "SHOW_BACKGROUND": true,
+    "MEDIA": "Kimono.gif",
+    "SYMBOL": "Kimono",
+    "MAX_SUPPLY": 4445,
+    "NFT_ID": 0,
+    "WEI_COST": 47000000000000000,
+    "DISPLAY_COST": 0.047
   },
-  "ITEMS": [
-    { "MEDIA": "Kimono.gif",
-      "SYMBOL": "Kimono",
-      "MAX_SUPPLY": 10000,
-      "mintedCount": 0,
-      "NFT_ID": 0,
-      "WEI_COST": 80000000000000000,
-      "DISPLAY_COST": 0.08
+  {
+    "CONTRACT_ADDRESS": "0x5a32D2dD842FD8a5a33d923d29E53a5D56cda0De",
+    "SCAN_LINK": "https://rinkeby.etherscan.io/address/0x5a32D2dD842FD8a5a33d923d29E53a5D56cda0De",
+    "MARKETPLACE": "Opensea",
+    "MARKETPLACE_LINK": "https://opensea.io/collection/",
+    "NETWORK": {
+      "NAME": "Rinkeby Test Network",
+      "SYMBOL": "ETH",
+      "ID": 4
     },
-    {
-     "MEDIA": "katana.gif",
-      "SYMBOL": "Katana",
-      "MAX_SUPPLY": 450,
-      "mintedCount": 153,
-      "NFT_ID": 0,
-      "WEI_COST": 1000000000000000000,
-      "DISPLAY_COST": 1
+    "NFT_NAME": "Shiburai",
+    "GAS_LIMIT": 3000000,
+    "SHOW_BACKGROUND": true,
+    "MEDIA": "katana.gif",
+    "SYMBOL": "Katana",
+    "MAX_SUPPLY": 4445,
+    "NFT_ID": 0,
+    "WEI_COST": 47000000000000000,
+    "DISPLAY_COST": 0.047
+  },
+  {
+    "CONTRACT_ADDRESS": "0x29e88fc3768ec9938a6de22c50b01ef790903b56",
+    "SCAN_LINK": "https://rinkeby.etherscan.io/address/0x5a32D2dD842FD8a5a33d923d29E53a5D56cda0De",
+    "MARKETPLACE": "Opensea",
+    "MARKETPLACE_LINK": "https://opensea.io/collection/",
+    "NETWORK": {
+      "NAME": "Rinkeby Test Network",
+      "SYMBOL": "ETH",
+      "ID": 4
     },
-    {
-      "MEDIA": "kabuto.gif",
-      "SYMBOL": "Kabuto",
-      "MAX_SUPPLY": 35,
-      "mintedCount": 23,
-      "NFT_ID": 0,
-      "WEI_COST": 5000000000000000000,
-      "DISPLAY_COST": 5
-    }
-  ]
-}
+    "NFT_NAME": "Shiburai",
+    "GAS_LIMIT": 3000000,
+    "SHOW_BACKGROUND": true,
+    "MEDIA": "kabuto.gif",
+    "SYMBOL": "Kabuto",
+    "MAX_SUPPLY": 4445,
+    "NFT_ID": 0,
+    "WEI_COST": 47000000000000000,
+    "DISPLAY_COST": 0.047
+  }
+]

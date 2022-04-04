@@ -4,6 +4,7 @@ import { fetchData } from "../redux/data/dataActions";
 import { connect } from "../redux/blockchain/blockchainActions";
 import * as s from "../styles/globalStyles";
 import styled from "styled-components";
+import axios from "axios";
 
 
 export const StyledButton = styled.button`
@@ -78,18 +79,20 @@ export const StyledLink = styled.a`
   text-decoration: none;
 `;
 
-const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLACE_LINK , NETWORK , NFT_NAME , GAS_LIMIT } , ItemOption , freeMinting }) => {
+const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLACE_LINK , NETWORK , NFT_NAME , GAS_LIMIT , MEDIA , SYMBOL , MAX_SUPPLY , WEI_COST , DISPLAY_COST } , index }) => {
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
-    
     const [feedback, setFeedback] = useState(`Click Mint below to obtain your Sentinel NFT.`);
     const [mintAmount, setMintAmount] = useState(1);
     const [claimingNft, setClaimingNft] = useState(false);
 
+    const MORALIS_API_KEY = '78KU4WCpkqjIAkGjSKbtRuYg7rjbfnEQkMtt6fLbVFh7chlqi3courfnXFjo461K';
+    const [mintedCount , setMintedCount] = useState(null);
+
     const claimNFTs = (nftID , free = false) => {
         let cost;
         if (nftID == 0) {
-            cost = ItemOption.WEI_COST;
+            cost = WEI_COST;
         }
         let gasLimit = GAS_LIMIT;
         let totalCostWei = String(cost * free ? 0 : mintAmount);
@@ -99,27 +102,27 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
         setFeedback(`Minting your ${NFT_NAME}...`);
         setClaimingNft(true);
         blockchain.smartContract.methods
-            .mint([])
-            .send({
-                gasLimit: String(totalGasLimit),
-                to:  CONTRACT_ADDRESS,
-                from: blockchain.account,
-                value: totalCostWei,
-            })
-            .once("error", (err) => {
-                console.log(err);
-                setFeedback("Sorry, something went wrong please try again later.");
-                setClaimingNft(false);
-            })
-            .then((receipt) => {
-                console.log(receipt);
-                setFeedback(
-                    `WOW, the ${NFT_NAME} is yours! go visit Opensea.io to view it.`
-                );
-                setClaimingNft(false);
-                dispatch(fetchData(blockchain.account));
-                setMintAmount(1);
-            });
+            .mintPublic( DISPLAY_COST, mintAmount)
+            // .send({
+            //     gasLimit: String(totalGasLimit),
+            //     to:  CONTRACT_ADDRESS,
+            //     from: blockchain.account,
+            //     value: totalCostWei,
+            // })
+            // .once("error", (err) => {
+            //     console.log(err);
+            //     setFeedback("Sorry, something went wrong please try again later.");
+            //     setClaimingNft(false);
+            // })
+            // .then((receipt) => {
+            //     console.log(receipt);
+            //     setFeedback(
+            //         `WOW, the ${NFT_NAME} is yours! go visit Opensea.io to view it.`
+            //     );
+            //     setClaimingNft(false);
+            //     dispatch(fetchData(blockchain.account));
+            //     setMintAmount(1);
+            // });
 
 
     };
@@ -134,16 +137,27 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
 
     const incrementMintAmount = () => {
         let newMintAmount = mintAmount + 1;
-        if (newMintAmount > 2 && ItemOption.SYMBOL == "Kimono" ) {
+        if (newMintAmount > 2 && SYMBOL == "Kimono" ) {
             newMintAmount = 2;
         }
-        if (newMintAmount > ItemOption.MAX_SUPPLY - ItemOption.mintedCount ) {
-            newMintAmount = ItemOption.MAX_SUPPLY - ItemOption.mintedCount;
+        if (newMintAmount > MAX_SUPPLY - mintedCount ) {
+            newMintAmount = MAX_SUPPLY - mintedCount;
         }
         setMintAmount(newMintAmount);
     };
 
-    const getData = () => {
+    const getData = async () => {
+
+        let res = await axios.get(`https://deep-index.moralis.io/api/v2/nft/${CONTRACT_ADDRESS}`, {
+            headers: {
+                "Content-type": "application/json",
+                "X-API-Key": MORALIS_API_KEY
+            }
+        })
+        
+        let mintedCount = res.data.total;
+        setMintedCount(mintedCount);
+
         if (blockchain.account !== "" && blockchain.smartContract !== null) {
             dispatch(fetchData(blockchain.account));
         }
@@ -172,13 +186,13 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
             }}
         >
             <s.Container flex={1} jc={"center"} ai={"center"}>
-                <StyledImg src={`/config/images/${ItemOption.MEDIA}`} alt=""/>
+                <StyledImg src={`/config/images/${MEDIA}`} alt=""/>
             </s.Container>
             <s.SpacerSmall />
             <s.TextTitle
                 style={{ textAlign: "center", fontSize: 50, color: "var(--accent-text)" }}
             >
-                {ItemOption.SYMBOL}
+                {SYMBOL}
             </s.TextTitle>
             <s.TextTitle
                 style={{
@@ -188,12 +202,12 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
                     color: "var(--accent-text)",
                 }}
             >
-                {ItemOption.mintedCount} / {ItemOption.MAX_SUPPLY}
+                {mintedCount} / {MAX_SUPPLY}
             </s.TextTitle>
             <s.TextTitle
                 style={{ textAlign: "center", color: "var(--accent-text)" }}
             >
-                {ItemOption.DISPLAY_COST}{" "}
+                {DISPLAY_COST}{" "}
                 {NETWORK.SYMBOL}{" "}Each
             </s.TextTitle>
             <s.TextDescription
@@ -232,7 +246,7 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
                 </StyledButton>
             </span>
             <s.SpacerSmall />
-            {Number(ItemOption.mintedCount) >= ItemOption.MAX_SUPPLY ? (
+            {Number(mintedCount) >= MAX_SUPPLY ? (
                 <>
                     <s.TextTitle
                         style={{ textAlign: "center", color: "var(--accent-text)" }}
@@ -267,7 +281,7 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
                             <StyledButton
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    dispatch(connect());
+                                    dispatch(connect(index));
                                     getData();
                                 }}
                             >
