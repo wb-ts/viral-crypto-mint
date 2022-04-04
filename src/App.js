@@ -33,7 +33,7 @@ function App() {
 
   const [CONFIG, SET_CONFIG] = useState([]);
   const MORALIS_API_KEY = '78KU4WCpkqjIAkGjSKbtRuYg7rjbfnEQkMtt6fLbVFh7chlqi3courfnXFjo461K';
-  const [freeMinting , setFreeMinting] = useState([]); 
+  const [freeMinting, setFreeMinting] = useState([]);
 
   const getConfig = async () => {
     const configResponse = await fetch("/config/config.json", {
@@ -46,7 +46,7 @@ function App() {
 
     SET_CONFIG(result);
   };
-  
+
   useEffect(() => {
     getConfig();
   }, []);
@@ -56,9 +56,9 @@ function App() {
       <s.Container
         flex={1}
         ai={"center"}
-        id="main" 
-        style={{ 
-          padding: 12, 
+        id="main"
+        style={{
+          padding: 12,
           backgroundColor: "var(--base)"
         }}
       >
@@ -77,7 +77,7 @@ function App() {
               fontSize: "20px"
             }}
           >
-            The Sentinel gives passage into Viral Crypto. 
+            The Sentinel gives passage into Viral Crypto.
           </s.TextDescription>
           <s.SpacerSmall />
           <s.TextDescription
@@ -91,13 +91,13 @@ function App() {
           </s.TextDescription>
           <s.SpacerSmall />
         </s.Container>
-          <ResponsiveWrapper flex={1} style={{ padding: 12 }}>
-            {
-              CONFIG.length && CONFIG.map((item , index) => {
-                return <Card key={index} CONFIG={item} index={index} freeMinting = { freeMinting } />
-              })
-            } 
-          </ResponsiveWrapper>
+        <ResponsiveWrapper flex={1} style={{ padding: 12 }}>
+          {
+            CONFIG.length && CONFIG.map((item, index) => {
+              return <Card key={index} CONFIG={item} index={index} freeMinting={freeMinting} api_key={MORALIS_API_KEY} />
+            })
+          }
+        </ResponsiveWrapper>
         <s.SpacerLarge />
         <s.SpacerLarge />
         <s.Container jc={"center"} ai={"center"} style={{ width: "70%" }}>

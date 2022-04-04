@@ -79,17 +79,16 @@ export const StyledLink = styled.a`
   text-decoration: none;
 `;
 
-const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLACE_LINK , NETWORK , NFT_NAME , GAS_LIMIT , MEDIA , SYMBOL , MAX_SUPPLY , WEI_COST , DISPLAY_COST } , index }) => {
+const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_LINK, NETWORK, NFT_NAME, GAS_LIMIT, MEDIA, SYMBOL, MAX_SUPPLY, WEI_COST, DISPLAY_COST }, index, api_key }) => {
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
     const [feedback, setFeedback] = useState(`Click Mint below to obtain your Sentinel NFT.`);
     const [mintAmount, setMintAmount] = useState(1);
     const [claimingNft, setClaimingNft] = useState(false);
 
-    const MORALIS_API_KEY = '78KU4WCpkqjIAkGjSKbtRuYg7rjbfnEQkMtt6fLbVFh7chlqi3courfnXFjo461K';
-    const [mintedCount , setMintedCount] = useState(null);
+    const [mintedCount, setMintedCount] = useState(null);
 
-    const claimNFTs = (nftID , free = false) => {
+    const claimNFTs = (nftID, free = false) => {
         let cost;
         if (nftID == 0) {
             cost = WEI_COST;
@@ -102,27 +101,27 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
         setFeedback(`Minting your ${NFT_NAME}...`);
         setClaimingNft(true);
         blockchain.smartContract.methods
-            .mintPublic( DISPLAY_COST, mintAmount)
-            // .send({
-            //     gasLimit: String(totalGasLimit),
-            //     to:  CONTRACT_ADDRESS,
-            //     from: blockchain.account,
-            //     value: totalCostWei,
-            // })
-            // .once("error", (err) => {
-            //     console.log(err);
-            //     setFeedback("Sorry, something went wrong please try again later.");
-            //     setClaimingNft(false);
-            // })
-            // .then((receipt) => {
-            //     console.log(receipt);
-            //     setFeedback(
-            //         `WOW, the ${NFT_NAME} is yours! go visit Opensea.io to view it.`
-            //     );
-            //     setClaimingNft(false);
-            //     dispatch(fetchData(blockchain.account));
-            //     setMintAmount(1);
-            // });
+            .mintPublic(DISPLAY_COST, mintAmount)
+        // .send({
+        //     gasLimit: String(totalGasLimit),
+        //     to:  CONTRACT_ADDRESS,
+        //     from: blockchain.account,
+        //     value: totalCostWei,
+        // })
+        // .once("error", (err) => {
+        //     console.log(err);
+        //     setFeedback("Sorry, something went wrong please try again later.");
+        //     setClaimingNft(false);
+        // })
+        // .then((receipt) => {
+        //     console.log(receipt);
+        //     setFeedback(
+        //         `WOW, the ${NFT_NAME} is yours! go visit Opensea.io to view it.`
+        //     );
+        //     setClaimingNft(false);
+        //     dispatch(fetchData(blockchain.account));
+        //     setMintAmount(1);
+        // });
 
 
     };
@@ -137,10 +136,10 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
 
     const incrementMintAmount = () => {
         let newMintAmount = mintAmount + 1;
-        if (newMintAmount > 2 && SYMBOL == "Kimono" ) {
+        if (newMintAmount > 2 && SYMBOL == "Kimono") {
             newMintAmount = 2;
         }
-        if (newMintAmount > MAX_SUPPLY - mintedCount ) {
+        if (newMintAmount > MAX_SUPPLY - mintedCount) {
             newMintAmount = MAX_SUPPLY - mintedCount;
         }
         setMintAmount(newMintAmount);
@@ -151,10 +150,10 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
         let res = await axios.get(`https://deep-index.moralis.io/api/v2/nft/${CONTRACT_ADDRESS}`, {
             headers: {
                 "Content-type": "application/json",
-                "X-API-Key": MORALIS_API_KEY
+                "X-API-Key": api_key
             }
         })
-        
+
         let mintedCount = res.data.total;
         setMintedCount(mintedCount);
 
@@ -186,7 +185,7 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
             }}
         >
             <s.Container flex={1} jc={"center"} ai={"center"}>
-                <StyledImg src={`/config/images/${MEDIA}`} alt=""/>
+                <StyledImg src={`/config/images/${MEDIA}`} alt="" />
             </s.Container>
             <s.SpacerSmall />
             <s.TextTitle
@@ -221,8 +220,8 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
                     color: "var(--primary-text)",
                 }}
             >
-                <StyledLink target={"_blank"} href={ SCAN_LINK}>
-                    {truncate( CONTRACT_ADDRESS, 24)}
+                <StyledLink target={"_blank"} href={SCAN_LINK}>
+                    {truncate(CONTRACT_ADDRESS, 24)}
                 </StyledLink>
             </s.TextDescription>
             <span
@@ -359,7 +358,7 @@ const Card = ({CONFIG : {CONTRACT_ADDRESS , SCAN_LINK , MARKETPLACE , MARKETPLAC
                                     disabled={claimingNft ? 1 : 0}
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        claimNFTs(0 , true);
+                                        claimNFTs(0, true);
                                         getData();
                                     }}
                                 >
