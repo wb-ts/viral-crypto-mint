@@ -21,23 +21,24 @@ const fetchDataFailed = (payload) => {
   };
 };
 
+
+
 export const fetchData = () => {
   return async (dispatch) => {
     dispatch(fetchDataRequest());
     try {
-      let minted = await store
-        .getState()
-        .blockchain.smartContract.methods
-        .totalSupply();
-      // let cost = await store
-      //   .getState()
-      //   .blockchain.smartContract.methods.cost()
-      //   .call();
+      let blockchain = await store.getState().blockchain;
+
+      let minted = await blockchain.smartContract.methods.totalSupply();
+      let canClaimWithKimono = await blockchain.smartContract.methods.canClaimWithKimono(0 , blockchain.account);
+      let shiburaiDiscountAtAmount = Number(await blockchain.smartContract.methods.shiburaiDiscountAtAmount().call());
+      console.log("blockchain.smartContract",shiburaiDiscountAtAmount);
 
       dispatch(
         fetchDataSuccess({
           minted,
-          // cost,
+          canClaimWithKimono,
+          shiburaiDiscountAtAmount
         })
       );
     } catch (err) {

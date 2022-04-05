@@ -1,7 +1,7 @@
 [
   {
-    "CONTRACT_ADDRESS": "0x6CAFFd1fd77c0b3207B5025038D7A7F1e8946e6a",
-    "SCAN_LINK": "https://rinkeby.etherscan.io/address/0x5a32D2dD842FD8a5a33d923d29E53a5D56cda0De",
+    "CONTRACT_ADDRESS": "0x3C11D452A2f9B137eCa9886B6d85281728dA8f4c",
+    "SCAN_LINK": "https://rinkeby.etherscan.io/address/0x3C11D452A2f9B137eCa9886B6d85281728dA8f4c",
     "MARKETPLACE": "Opensea",
     "MARKETPLACE_LINK": "https://opensea.io/collection/",
     "NETWORK": {
@@ -20,8 +20,8 @@
     "DISPLAY_COST": 0.047
   },
   {
-    "CONTRACT_ADDRESS": "0x5a32D2dD842FD8a5a33d923d29E53a5D56cda0De",
-    "SCAN_LINK": "https://rinkeby.etherscan.io/address/0x5a32D2dD842FD8a5a33d923d29E53a5D56cda0De",
+    "CONTRACT_ADDRESS": "0x776c84d85F5fbc5823d3C932EF4946e953d9256f",
+    "SCAN_LINK": "https://rinkeby.etherscan.io/address/0x776c84d85F5fbc5823d3C932EF4946e953d9256f",
     "MARKETPLACE": "Opensea",
     "MARKETPLACE_LINK": "https://opensea.io/collection/",
     "NETWORK": {
@@ -40,8 +40,8 @@
     "DISPLAY_COST": 0.047
   },
   {
-    "CONTRACT_ADDRESS": "0x29e88fc3768ec9938a6de22c50b01ef790903b56",
-    "SCAN_LINK": "https://rinkeby.etherscan.io/address/0x5a32D2dD842FD8a5a33d923d29E53a5D56cda0De",
+    "CONTRACT_ADDRESS": "0xBBa76084d755b249ED833A24de8bC519535daD25",
+    "SCAN_LINK": "https://rinkeby.etherscan.io/address/0xBBa76084d755b249ED833A24de8bC519535daD25",
     "MARKETPLACE": "Opensea",
     "MARKETPLACE_LINK": "https://opensea.io/collection/",
     "NETWORK": {

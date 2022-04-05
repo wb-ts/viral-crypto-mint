@@ -1,7 +1,8 @@
 const initialState = {
   loading: false,
   minted: 0,
-  cost: 0,
+  canClaimWithKimono: false,
+  shiburaiDiscountAtAmount: 0,
   error: false,
   errorMsg: "",
 };
@@ -21,7 +22,8 @@ const dataReducer = (state = initialState, action) => {
         loading: false,
         totalSupply: action.payload.totalSupply,
         minted: action.payload.minted,
-        // cost: action.payload.cost,
+        canClaimWithKimono: action.payload.canClaimWithKimono,
+        shiburaiDiscountAtAmount: action.payload.shiburaiDiscountAtAmount,
         error: false,
         errorMsg: "",
       };

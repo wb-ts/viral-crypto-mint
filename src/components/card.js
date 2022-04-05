@@ -82,8 +82,10 @@ export const StyledLink = styled.a`
 const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_LINK, NETWORK, NFT_NAME, GAS_LIMIT, MEDIA, SYMBOL, MAX_SUPPLY, WEI_COST, DISPLAY_COST }, index, api_key }) => {
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
+    const data = useSelector((state) => state.data);
     const [feedback, setFeedback] = useState(`Click Mint below to obtain your Sentinel NFT.`);
     const [mintAmount, setMintAmount] = useState(1);
+    const [balanceShiburai, setBalanceShiburai] = useState(0);
     const [claimingNft, setClaimingNft] = useState(false);
 
     const [mintedCount, setMintedCount] = useState(null);
@@ -95,33 +97,34 @@ const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_
         }
         let gasLimit = GAS_LIMIT;
         let totalCostWei = String(cost * free ? 0 : mintAmount);
+        if (balanceShiburai > data.shiburaiDiscountAtAmount ) totalCostWei/2;
         let totalGasLimit = String(gasLimit);
         console.log("Cost: ", totalCostWei);
         console.log("Gas limit: ", totalGasLimit);
         setFeedback(`Minting your ${NFT_NAME}...`);
         setClaimingNft(true);
         blockchain.smartContract.methods
-            .mintPublic(DISPLAY_COST, mintAmount)
-        // .send({
-        //     gasLimit: String(totalGasLimit),
-        //     to:  CONTRACT_ADDRESS,
-        //     from: blockchain.account,
-        //     value: totalCostWei,
-        // })
-        // .once("error", (err) => {
-        //     console.log(err);
-        //     setFeedback("Sorry, something went wrong please try again later.");
-        //     setClaimingNft(false);
-        // })
-        // .then((receipt) => {
-        //     console.log(receipt);
-        //     setFeedback(
-        //         `WOW, the ${NFT_NAME} is yours! go visit Opensea.io to view it.`
-        //     );
-        //     setClaimingNft(false);
-        //     dispatch(fetchData(blockchain.account));
-        //     setMintAmount(1);
-        // });
+            .mintPublic(mintAmount)
+            .send({
+                gasLimit: String(totalGasLimit),
+                to: CONTRACT_ADDRESS,
+                from: blockchain.account,
+                value: totalCostWei,
+            })
+            .once("error", (err) => {
+                console.log(err);
+                setFeedback("Sorry, something went wrong please try again later.");
+                setClaimingNft(false);
+            })
+            .then((receipt) => {
+                console.log(receipt);
+                setFeedback(
+                    `WOW, the ${NFT_NAME} is yours! go visit Opensea.io to view it.`
+                );
+                setClaimingNft(false);
+                dispatch(fetchData(blockchain.account));
+                setMintAmount(1);
+            });
 
 
     };
@@ -154,13 +157,23 @@ const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_
             }
         })
 
-        let mintedCount = res.data.total;
-        setMintedCount(mintedCount);
+        setMintedCount(res.data.total);
+
+        res = await axios.get(`https://deep-index.moralis.io/api/v2/${CONTRACT_ADDRESS}/balance?chain=rinkeby`, {
+            headers: {
+                "Content-type": "application/json",
+                "X-API-Key": api_key
+            }
+        })
+
+
+        setBalanceShiburai(res.data.balance);
 
         if (blockchain.account !== "" && blockchain.smartContract !== null) {
             dispatch(fetchData(blockchain.account));
         }
     };
+
     useEffect(() => {
         getData();
     }, [blockchain.account]);
@@ -206,9 +219,16 @@ const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_
             <s.TextTitle
                 style={{ textAlign: "center", color: "var(--accent-text)" }}
             >
-                {DISPLAY_COST}{" "}
-                {NETWORK.SYMBOL}{" "}Each
+                {
+                    balanceShiburai > data.shiburaiDiscountAtAmount ? 
+                        <>{DISPLAY_COST / 2}{" "}{NETWORK.SYMBOL} Each <span style={{ color: "red" }}>50% off</span> </> 
+                        : 
+                        `${DISPLAY_COST} ${NETWORK.SYMBOL} Each`
+                }
             </s.TextTitle>
+            {
+                console.log("balanceShiburai > data.shiburaiDiscountAtAmount", balanceShiburai , data.shiburaiDiscountAtAmount)
+            }
             <s.TextDescription
                 style={{ textAlign: "center", color: "var(--accent-text)" }}
             >
@@ -274,7 +294,7 @@ const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_
                                     color: "var(--accent-text)",
                                 }}
                             >
-                                Connect to {NETWORK.NAME} for Minted Supply and<br /> obtain The Sentinel
+                                Connect wallet to obtain Shiburai NFT
                             </s.TextDescription>
                             <s.SpacerSmall />
                             <StyledButton
@@ -354,16 +374,19 @@ const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_
                                 >
                                     {claimingNft ? "BUSY" : "Mint"}
                                 </StyledButton>
-                                <StyledButton
-                                    disabled={claimingNft ? 1 : 0}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        claimNFTs(0, true);
-                                        getData();
-                                    }}
-                                >
-                                    {claimingNft ? "BUSY" : "Free Mint"}
-                                </StyledButton>
+                                {data.canClaimWithKimono ?
+                                    <StyledButton
+                                        disabled={claimingNft ? 1 : 0}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            claimNFTs(0, true);
+                                            getData();
+                                        }}
+                                    >
+                                        {claimingNft ? "BUSY" : "Free Mint"}
+                                    </StyledButton>
+                                    : ""
+                                }
                             </s.Container>
                         </>
                     )}
