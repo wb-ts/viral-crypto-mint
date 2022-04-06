@@ -33,6 +33,7 @@ function App() {
 
   const [CONFIG, SET_CONFIG] = useState([]);
   const MORALIS_API_KEY = '78KU4WCpkqjIAkGjSKbtRuYg7rjbfnEQkMtt6fLbVFh7chlqi3courfnXFjo461K';
+  const shiburaiContractAddress = '0x92697e3aa182a4693Ab65bA3f8225D4f659dE65F';
   const [freeMinting, setFreeMinting] = useState([]);
 
   const getConfig = async () => {
@@ -94,7 +95,7 @@ function App() {
         <ResponsiveWrapper flex={1} style={{ padding: 12 }}>
           {
             CONFIG.length && CONFIG.map((item, index) => {
-              return <Card key={index} CONFIG={item} index={index} freeMinting={freeMinting} api_key={MORALIS_API_KEY} />
+              return <Card key={index} CONFIG={item} index={index} api_key={MORALIS_API_KEY} shiburaiContractAddress = {shiburaiContractAddress}/>
             })
           }
         </ResponsiveWrapper>

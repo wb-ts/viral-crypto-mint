@@ -1,6 +1,6 @@
 // log
 import store from "../store";
-import axios from 'axios';
+import { getProof } from '../../components/merkleTree';
 
 const fetchDataRequest = () => {
   return {
@@ -35,18 +35,18 @@ export const fetchData = () => {
       let shiburaiDiscountAtAmount = Number(await blockchain.smartContract.methods.shiburaiDiscountAtAmount().call());
       let reverted = false;
 
-      let res = await axios.get(`http://localhost:8080?leaf=${blockchain.account}`);
+      let proof = await getProof(blockchain.account);
 
-      // blockchain.smartContract.methods
-      // .claim(res.data.proof)
-      // .call()
-      // .then( (res) =>{
-      //   console.log("SUCCESS");
-      //   reverted = true;
-      // })
-      // .catch(
-      //   console.log("Error")
-      // )
+      blockchain.smartContract.methods
+      .claim(proof)
+      .call()
+      .then( (res) =>{
+        console.log("SUCCESS");
+        reverted = true;
+      })
+      .catch(
+        console.log("Error")
+      )
 
       dispatch(
         fetchDataSuccess({

@@ -79,7 +79,24 @@ export const StyledLink = styled.a`
   text-decoration: none;
 `;
 
-const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_LINK, NETWORK, NFT_NAME, GAS_LIMIT, MEDIA, SYMBOL, MAX_SUPPLY, WEI_COST, DISPLAY_COST }, index, api_key }) => {
+const Card = ({ 
+    CONFIG: { 
+        CONTRACT_ADDRESS, 
+        SCAN_LINK, 
+        MARKETPLACE, 
+        MARKETPLACE_LINK, 
+        NETWORK, 
+        NFT_NAME, 
+        GAS_LIMIT, 
+        MEDIA, 
+        SYMBOL, 
+        MAX_SUPPLY, 
+        WEI_COST, 
+        DISPLAY_COST 
+    }, 
+    index, 
+    api_key ,
+    shiburaiContractAddress }) => {
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
     const data = useSelector((state) => state.data);
@@ -87,7 +104,7 @@ const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_
     const [mintAmount, setMintAmount] = useState(1);
     const [balanceShiburai, setBalanceShiburai] = useState(0);
     const [minting, setMinting] = useState(false);
-
+    const [freeMint, seetFreeMint] = useState(false);
     const [mintedCount, setMintedCount] = useState(null);
 
     const mintNFTs = (nftID, free = false) => {
@@ -121,6 +138,7 @@ const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_
                 setFeedback(
                     `WOW, the ${NFT_NAME} is yours! go visit Opensea.io to view it.`
                 );
+                seetFreeMint(true);
                 setMinting(false);
                 dispatch(fetchData(blockchain.account));
                 setMintAmount(1);
@@ -160,13 +178,12 @@ const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_
 
         setMintedCount(res.data.total);
 
-        res = await axios.get(`https://deep-index.moralis.io/api/v2/${CONTRACT_ADDRESS}/balance?chain=rinkeby`, {
+        res = await axios.get(`https://deep-index.moralis.io/api/v2/${shiburaiContractAddress}/balance?chain=rinkeby`, {
             headers: {
                 "Content-type": "application/json",
                 "X-API-Key": api_key
             }
         })
-
         setBalanceShiburai(res.data.balance);
 
 
@@ -401,7 +418,7 @@ const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_
                                 >
                                     {minting ? "BUSY" : "Mint"}
                                 </StyledButton>
-                                {data.canClaimWithKimono ?
+                                {freeMint ?
                                     <StyledButton
                                         disabled={minting ? 1 : 0}
                                         onClick={(e) => {
