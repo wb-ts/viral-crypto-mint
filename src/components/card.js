@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchData } from "../redux/data/dataActions";
-import { connect } from "../redux/blockchain/blockchainActions";
+import { connect, callClaim } from "../redux/blockchain/blockchainActions";
 import * as s from "../styles/globalStyles";
 import styled from "styled-components";
 import axios from "axios";
@@ -86,48 +86,49 @@ const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_
     const [feedback, setFeedback] = useState(`Click Mint below to obtain your Sentinel NFT.`);
     const [mintAmount, setMintAmount] = useState(1);
     const [balanceShiburai, setBalanceShiburai] = useState(0);
-    const [claimingNft, setClaimingNft] = useState(false);
+    const [minting, setMinting] = useState(false);
 
     const [mintedCount, setMintedCount] = useState(null);
 
-    const claimNFTs = (nftID, free = false) => {
+    const mintNFTs = (nftID, free = false) => {
         let cost;
         if (nftID == 0) {
             cost = WEI_COST;
         }
         let gasLimit = GAS_LIMIT;
-        let totalCostWei = String(cost * free ? 0 : mintAmount);
-        if (balanceShiburai > data.shiburaiDiscountAtAmount ) totalCostWei/2;
+        let totalCostWei = free ? 0 : cost * mintAmount;
+        if (balanceShiburai > data.shiburaiDiscountAtAmount) totalCostWei / 2;
         let totalGasLimit = String(gasLimit);
         console.log("Cost: ", totalCostWei);
         console.log("Gas limit: ", totalGasLimit);
         setFeedback(`Minting your ${NFT_NAME}...`);
-        setClaimingNft(true);
+        setMinting(true);
         blockchain.smartContract.methods
-            .mintPublic(mintAmount)
+            .mintPublic(free ? 1 : mintAmount)
             .send({
                 gasLimit: String(totalGasLimit),
                 to: CONTRACT_ADDRESS,
                 from: blockchain.account,
-                value: totalCostWei,
+                value: String(totalCostWei),
             })
             .once("error", (err) => {
                 console.log(err);
                 setFeedback("Sorry, something went wrong please try again later.");
-                setClaimingNft(false);
+                setMinting(false);
             })
             .then((receipt) => {
                 console.log(receipt);
                 setFeedback(
                     `WOW, the ${NFT_NAME} is yours! go visit Opensea.io to view it.`
                 );
-                setClaimingNft(false);
+                setMinting(false);
                 dispatch(fetchData(blockchain.account));
                 setMintAmount(1);
             });
-
-
     };
+    const claimNFTs = () => {
+        
+    }
 
     const decrementMintAmount = () => {
         let newMintAmount = mintAmount - 1;
@@ -166,8 +167,12 @@ const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_
             }
         })
 
-
         setBalanceShiburai(res.data.balance);
+
+
+        // res = await web3.contract.claim(res.data.proof).call();
+
+        // dispatch(callClaim(res.data.proof));
 
         if (blockchain.account !== "" && blockchain.smartContract !== null) {
             dispatch(fetchData(blockchain.account));
@@ -220,15 +225,12 @@ const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_
                 style={{ textAlign: "center", color: "var(--accent-text)" }}
             >
                 {
-                    balanceShiburai > data.shiburaiDiscountAtAmount ? 
-                        <>{DISPLAY_COST / 2}{" "}{NETWORK.SYMBOL} Each <span style={{ color: "red" }}>50% off</span> </> 
-                        : 
+                    balanceShiburai > data.shiburaiDiscountAtAmount ?
+                        <>{DISPLAY_COST / 2}{" "}{NETWORK.SYMBOL} Each <span style={{ color: "red" }}>50% off</span> </>
+                        :
                         `${DISPLAY_COST} ${NETWORK.SYMBOL} Each`
                 }
             </s.TextTitle>
-            {
-                console.log("balanceShiburai > data.shiburaiDiscountAtAmount", balanceShiburai , data.shiburaiDiscountAtAmount)
-            }
             <s.TextDescription
                 style={{ textAlign: "center", color: "var(--accent-text)" }}
             >
@@ -331,10 +333,35 @@ const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_
                                 {feedback}
                             </s.TextDescription>
                             <s.SpacerMedium />
+                            {data.reverted ?
+                                <>
+                                    <s.TextDescription
+                                        style={{
+                                            textAlign: "center",
+                                            color: "var(--accent-text)",
+                                        }}
+                                    >
+                                        You are whitelisted, claim for free here
+                                    </s.TextDescription>
+                                    <s.SpacerMedium />
+                                    <StyledButton
+                                        disabled={minting ? 1 : 0}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            claimNFTs(0, true);
+                                            getData();
+                                        }}
+                                    >
+                                        {minting ? "BUSY" : "Claim whitelisted"}
+                                    </StyledButton>
+                                </>
+                                : ""
+                            }
+                            <s.SpacerMedium />
                             <s.Container ai={"center"} jc={"center"} fd={"row"}>
                                 <StyledRoundButton
                                     style={{ lineHeight: 0.4 }}
-                                    disabled={claimingNft ? 1 : 0}
+                                    disabled={minting ? 1 : 0}
                                     onClick={(e) => {
                                         e.preventDefault();
                                         decrementMintAmount();
@@ -353,7 +380,7 @@ const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_
                                 </s.TextDescription>
                                 <s.SpacerMedium />
                                 <StyledRoundButton
-                                    disabled={claimingNft ? 1 : 0}
+                                    disabled={minting ? 1 : 0}
                                     onClick={(e) => {
                                         e.preventDefault();
                                         incrementMintAmount();
@@ -365,25 +392,25 @@ const Card = ({ CONFIG: { CONTRACT_ADDRESS, SCAN_LINK, MARKETPLACE, MARKETPLACE_
                             <s.SpacerMedium />
                             <s.Container ai={"center"} jc={"center"} fd={"row"}>
                                 <StyledButton
-                                    disabled={claimingNft ? 1 : 0}
+                                    disabled={minting ? 1 : 0}
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        claimNFTs(0);
+                                        mintNFTs(0);
                                         getData();
                                     }}
                                 >
-                                    {claimingNft ? "BUSY" : "Mint"}
+                                    {minting ? "BUSY" : "Mint"}
                                 </StyledButton>
                                 {data.canClaimWithKimono ?
                                     <StyledButton
-                                        disabled={claimingNft ? 1 : 0}
+                                        disabled={minting ? 1 : 0}
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            claimNFTs(0, true);
+                                            mintNFTs(0, true);
                                             getData();
                                         }}
                                     >
-                                        {claimingNft ? "BUSY" : "Free Mint"}
+                                        {minting ? "BUSY" : "Free Mint"}
                                     </StyledButton>
                                     : ""
                                 }

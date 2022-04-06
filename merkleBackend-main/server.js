@@ -12,6 +12,7 @@ let specialAddresses = [
   "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
   "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
   "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+  "0x1C1A902D6EB72dd6a7c49C45c3613d4E7445C349"
 ];
 const initialLength = specialAddresses.length;
 for (let i = 1; i <= 500; i++) {
@@ -31,7 +32,7 @@ const tree = new MerkleTree(leaves, keccak256, { sort: true });
 const root = tree.getHexRoot();
 
 const app = express();
-const port = 3000;
+const port = 8080;
 
 app.get("/", (req, res) => {
   console.log(req.query.leaf);

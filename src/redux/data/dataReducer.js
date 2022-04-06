@@ -3,6 +3,7 @@ const initialState = {
   minted: 0,
   canClaimWithKimono: false,
   shiburaiDiscountAtAmount: 0,
+  reverted: false,
   error: false,
   errorMsg: "",
 };
@@ -24,6 +25,7 @@ const dataReducer = (state = initialState, action) => {
         minted: action.payload.minted,
         canClaimWithKimono: action.payload.canClaimWithKimono,
         shiburaiDiscountAtAmount: action.payload.shiburaiDiscountAtAmount,
+        reverted: action.payload.reverted,
         error: false,
         errorMsg: "",
       };

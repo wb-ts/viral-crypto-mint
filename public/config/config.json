@@ -40,8 +40,8 @@
     "DISPLAY_COST": 0.047
   },
   {
-    "CONTRACT_ADDRESS": "0xBBa76084d755b249ED833A24de8bC519535daD25",
-    "SCAN_LINK": "https://rinkeby.etherscan.io/address/0xBBa76084d755b249ED833A24de8bC519535daD25",
+    "CONTRACT_ADDRESS": "0xd9145CCE52D386f254917e481eB44e9943F39138",
+    "SCAN_LINK": "https://rinkeby.etherscan.io/address/0xd9145CCE52D386f254917e481eB44e9943F39138",
     "MARKETPLACE": "Opensea",
     "MARKETPLACE_LINK": "https://opensea.io/collection/",
     "NETWORK": {

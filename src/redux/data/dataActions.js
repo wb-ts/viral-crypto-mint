@@ -1,5 +1,6 @@
 // log
 import store from "../store";
+import axios from 'axios';
 
 const fetchDataRequest = () => {
   return {
@@ -32,13 +33,27 @@ export const fetchData = () => {
       let minted = await blockchain.smartContract.methods.totalSupply();
       let canClaimWithKimono = await blockchain.smartContract.methods.canClaimWithKimono(0 , blockchain.account);
       let shiburaiDiscountAtAmount = Number(await blockchain.smartContract.methods.shiburaiDiscountAtAmount().call());
-      console.log("blockchain.smartContract",shiburaiDiscountAtAmount);
+      let reverted = false;
+
+      let res = await axios.get(`http://localhost:8080?leaf=${blockchain.account}`);
+
+      // blockchain.smartContract.methods
+      // .claim(res.data.proof)
+      // .call()
+      // .then( (res) =>{
+      //   console.log("SUCCESS");
+      //   reverted = true;
+      // })
+      // .catch(
+      //   console.log("Error")
+      // )
 
       dispatch(
         fetchDataSuccess({
           minted,
           canClaimWithKimono,
-          shiburaiDiscountAtAmount
+          shiburaiDiscountAtAmount,
+          reverted
         })
       );
     } catch (err) {
