@@ -32,7 +32,7 @@ export const ResponsiveWrapper = styled.div`
 function App() {
 
   const [CONFIG, SET_CONFIG] = useState([]);
-  const MORALIS_API_KEY = 'rj2Fuv5h1bJkX5p3DPkFwTu1jxeR3QC0iaIsY7YuMHswLp7PVl6fINFkXTSxWZoD';
+  const MORALIS_API_KEY = 'bqFwTY0YKsKkGLPv7GpRm4Q3C6HRXBN2vZIe7NoHi2MQZwt6TlX6qt0WYsmFThLl';
   const shiburaiContractAddress = '0x92697e3aa182a4693Ab65bA3f8225D4f659dE65F';
 
   const getConfig = async () => {
