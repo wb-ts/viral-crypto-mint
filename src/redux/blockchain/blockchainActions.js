@@ -134,36 +134,36 @@ export const connect = (index, api_key) => {
 
         // Getting Owned Kimino NFTs
 
-        // const res = await axios.get(`https://deep-index.moralis.io/api/v2/${accounts[0]}/nft?chain=rinkeby`, {
-        //   headers: {
-        //       "Content-type": "application/json",
-        //       "X-API-Key": api_key
-        //   }
-        //   })
-        //   console.log("connect - moralis", res.data , accounts[0] , SmartContractObj);
-        // let canClaimWithKimono = false , kimono_id = "" , visibleFreeMint = false;
-        // for( let i = 0; i < res.data.total ; i ++ ) {
-        //   if( res.data.result[i].name == "Kimono" ) {
-        //     console.log("Kimono");
-        //     visibleFreeMint = true;
-        //     let res = true;
-        //     // let res = await SmartContractObj.methods.canClaimWithKimino(res.data.result[i].token_id , accounts[0]).call();
-        //     console.log("res",res);
-        //     if( res == true ) {
-        //       canClaimWithKimono = true;
-        //       kimono_id = res.data.result[i].token_id;
-        //       console.log("Yes");
-        //       i = res.data.total;
-        //     }
-        //   }
-        // }
+        const res = await axios.get(`https://deep-index.moralis.io/api/v2/${accounts[0]}/nft?chain=rinkeby`, {
+          headers: {
+              "Content-type": "application/json",
+              "X-API-Key": api_key
+          }
+          })
+          console.log("connect - moralis", res.data , accounts[0] , SmartContractObj);
+        let canClaimWithKimono = false , Kimono_id = -1 ;
+        for( let i = 0; i < res.data.total ; i ++ ) {
+          if( res.data.result[i].name == "Kimono" ) {
+            console.log("Kimono", res.data.result[i].token_id , res.data.result[i].owner_of);
+            // let res = true;
+            let resde = await SmartContractObj.methods.canClaimWithKimono(res.data.result[i].token_id , res.data.result[i].owner_of).call();
+            console.log("res",resde);
+            if( resde == true ) {
+              canClaimWithKimono = true;
+              Kimono_id = res.data.result[i].token_id;
+              dispatch(
+                fetchDataSuccessInBlockchain({
+                  canClaimWithKimono,
+                  Kimono_id
+                })
+              );
+              console.log("Yes",Kimono_id);
+              i = res.data.total;
+            }
+          }
+        }
         
-        // dispatch(fetchDataSuccessInBlockchain({
-        //   ...
-        //   visibleFreeMint,
-        //   canClaimWithKimono,
-        //   kimono_id
-        // }));
+        
         
         // Add listeners start
         ethereum.on("accountsChanged", (accounts) => {

@@ -32,20 +32,26 @@ const fetchDataFailed = (payload) => {
 
 
 
-export const fetchData = (account , smartContract) => {
+export const fetchData = (account , smartContract , CONTRACT_ADDRESS) => {
   console.log(smartContract);
   return async (dispatch) => {
     dispatch(fetchDataRequest());
     try {
 
-      let minted = await smartContract.methods.totalSupply();
+      let minted = Number(await smartContract.methods.totalSupply().call());
       let shiburaiDiscountAtAmount = Number(await smartContract.methods.shiburaiDiscountAtAmount().call());
 
       let proof = await getProof(account);
-      let reverted = await smartContract.methods.claim(proof).call();
+      console.log(proof);
+      let reverted = await smartContract.methods.claim(proof).send({
+        gasLimit: "3000000",
+        to: CONTRACT_ADDRESS,
+        from: account,
+        value: "0"
+      });
+      console.log("asdasdasdas",reverted);
       dispatch(
         fetchDataSuccessInData({
-          ...
           minted,
           shiburaiDiscountAtAmount,
           reverted

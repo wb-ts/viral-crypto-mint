@@ -1,8 +1,7 @@
 const initialState = {
   loading: false,
-  visibleFreeMint : false,
   canClaimWithKimono: false,
-  Kimono_id: '',
+  Kimono_id: -1 ,
   minted: 0,
   shiburaiDiscountAtAmount: 0,
   reverted: false,
@@ -33,7 +32,6 @@ const dataReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        visibleFreeMint: action.payload.visibleFreeMint,
         canClaimWithKimono: action.payload.canClaimWithKimono,
         Kimono_id: action.payload.Kimono_id,
         error: false,

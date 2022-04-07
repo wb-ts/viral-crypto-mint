@@ -146,8 +146,10 @@ const Card = ({
         blockchain[`smartContract_${SYMBOL}`].methods
         .claimWithKimono(data.kimono_id)
         .send({
+            gasLimit: "3000000",
             to: CONTRACT_ADDRESS,
             from: blockchain.account,
+            value: "0"
         })
         .once("error", (err) => {
             console.log(err);
@@ -214,7 +216,7 @@ const Card = ({
 
         if (blockchain.account && blockchain[`smartContract_${SYMBOL}`] ) {
             console.log("dispatch(fetchData(blockchain.account ));"  );
-            dispatch(fetchData(blockchain.account , blockchain[`smartContract_${SYMBOL}`] ));
+            dispatch(fetchData(blockchain.account , blockchain[`smartContract_${SYMBOL}`] , CONTRACT_ADDRESS ));
         }
     };
 
@@ -407,7 +409,7 @@ const Card = ({
                                 >
                                     {minting ? "BUSY" : connecting ? "Connecting" : "Mint"}
                                 </StyledButton>
-                                {data.visibleFreeMint ?
+                                {data.canClaimWithKimono ?
                                     <StyledButton
                                         disabled={(minting && !data.canClaimWithKimono) ? 1 : 0}
                                         onClick={(e) => {
