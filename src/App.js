@@ -32,9 +32,8 @@ export const ResponsiveWrapper = styled.div`
 function App() {
 
   const [CONFIG, SET_CONFIG] = useState([]);
-  const MORALIS_API_KEY = '78KU4WCpkqjIAkGjSKbtRuYg7rjbfnEQkMtt6fLbVFh7chlqi3courfnXFjo461K';
+  const MORALIS_API_KEY = 'rj2Fuv5h1bJkX5p3DPkFwTu1jxeR3QC0iaIsY7YuMHswLp7PVl6fINFkXTSxWZoD';
   const shiburaiContractAddress = '0x92697e3aa182a4693Ab65bA3f8225D4f659dE65F';
-  const [freeMinting, setFreeMinting] = useState([]);
 
   const getConfig = async () => {
     const configResponse = await fetch("/config/config.json", {

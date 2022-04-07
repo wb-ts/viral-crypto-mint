@@ -1,8 +1,9 @@
 const initialState = {
   loading: false,
-  minted: 0,
+  visibleFreeMint : false,
   canClaimWithKimono: false,
-  kimono_id: '',
+  Kimono_id: '',
+  minted: 0,
   shiburaiDiscountAtAmount: 0,
   reverted: false,
   error: false,
@@ -18,15 +19,23 @@ const dataReducer = (state = initialState, action) => {
         error: false,
         errorMsg: "",
       };
-    case "CHECK_DATA_SUCCESS":
+    case "CHECK_DATA_SUCCESS_IN_DATA":
       return {
         ...state,
         loading: false,
-        totalSupply: action.payload.totalSupply,
         minted: action.payload.minted,
-        canClaimWithKimono: action.payload.canClaimWithKimono,
         shiburaiDiscountAtAmount: action.payload.shiburaiDiscountAtAmount,
         reverted: action.payload.reverted,
+        error: false,
+        errorMsg: "",
+      };
+    case "CHECK_DATA_SUCCESS_IN_BLOCKCHAIN":
+      return {
+        ...state,
+        loading: false,
+        visibleFreeMint: action.payload.visibleFreeMint,
+        canClaimWithKimono: action.payload.canClaimWithKimono,
+        Kimono_id: action.payload.Kimono_id,
         error: false,
         errorMsg: "",
       };

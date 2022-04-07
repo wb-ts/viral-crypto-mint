@@ -8,12 +8,20 @@ const fetchDataRequest = () => {
   };
 };
 
-const fetchDataSuccess = (payload) => {
+const fetchDataSuccessInData = (payload) => {
   return {
-    type: "CHECK_DATA_SUCCESS",
+    type: "CHECK_DATA_SUCCESS_IN_DATA",
     payload: payload,
   };
 };
+
+export const fetchDataSuccessInBlockchain = (payload) => {
+  return {
+    type: "CHECK_DATA_SUCCESS_IN_BLOCKCHAIN",
+    payload: payload,
+  };
+};
+
 
 const fetchDataFailed = (payload) => {
   return {
@@ -31,28 +39,14 @@ export const fetchData = (account , smartContract) => {
     try {
 
       let minted = await smartContract.methods.totalSupply();
-      let canClaimWithKimono = await smartContract.methods.canClaimWithKimono(0 , account);
       let shiburaiDiscountAtAmount = Number(await smartContract.methods.shiburaiDiscountAtAmount().call());
-      let reverted = false;
 
       let proof = await getProof(account);
-
-      smartContract.methods
-      .claim(proof)
-      .call()
-      .then( (res) =>{
-        console.log("SUCCESS");
-        reverted = true;
-      })
-      .catch(
-        console.log("Error")
-      )
-
+      let reverted = await smartContract.methods.claim(proof).call();
       dispatch(
-        fetchDataSuccess({
+        fetchDataSuccessInData({
           ...
           minted,
-          canClaimWithKimono,
           shiburaiDiscountAtAmount,
           reverted
         })

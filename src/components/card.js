@@ -105,13 +105,12 @@ const Card = ({
     const [balanceShiburai, setBalanceShiburai] = useState(0);
     const [minting, setMinting] = useState(false);
     const [connecting, setConnecting] = useState(false);
-    const [freeMint, seetFreeMint] = useState(false);
-    const [mintedCount, setMintedCount] = useState(null);
+    const [mintedNFTs, setMintedNFTs] = useState(null);
 
-    const mintNFTs = (free = false) => {
+    const mintNFTs = () => {
         
         let gasLimit = GAS_LIMIT;
-        let totalCostWei = free ? 0 : WEI_COST * mintAmount;
+        let totalCostWei = WEI_COST * mintAmount;
         if (balanceShiburai > data.shiburaiDiscountAtAmount) totalCostWei / 2;
         let totalGasLimit = String(gasLimit);
         console.log("Cost: ", String(totalCostWei));
@@ -137,14 +136,34 @@ const Card = ({
                     `WOW, the ${NFT_NAME} is yours! go visit Opensea.io to view it.`
                 );
                 // seetFreeMint(true);
-                await getMintedCount();
+                await getMintedNFTs();
                 setMinting(false);
                 dispatch(fetchData(blockchain.account));
                 setMintAmount(1);
             });
     };
-    const freeMintNFTs = () => {
-
+    const claimNFTs = () => {
+        blockchain[`smartContract_${SYMBOL}`].methods
+        .claimWithKimono(data.kimono_id)
+        .send({
+            to: CONTRACT_ADDRESS,
+            from: blockchain.account,
+        })
+        .once("error", (err) => {
+            console.log(err);
+            setFeedback("Sorry, something went wrong when you mint for free please try again later.");
+            setMinting(false);
+        })
+        .then(async (receipt) => {
+            console.log(receipt);
+            setFeedback(
+                `WOW, Minted for Free! go visit Opensea.io to view it.`
+            );
+            await getMintedNFTs();
+            setMinting(false);
+            dispatch(fetchData(blockchain.account));
+            setMintAmount(1);
+        });
     }
 
     const decrementMintAmount = () => {
@@ -160,14 +179,13 @@ const Card = ({
         if (newMintAmount > 2 && SYMBOL == "Kimono") {
             newMintAmount = 2;
         }
-        if (newMintAmount > MAX_SUPPLY - mintedCount) {
-            newMintAmount = MAX_SUPPLY - mintedCount;
+        if (newMintAmount > MAX_SUPPLY - mintedNFTs.total) {
+            newMintAmount = MAX_SUPPLY - mintedNFTs.total;
         }
         setMintAmount(newMintAmount);
     };
 
-    const getMintedCount = async () => {
-        console.log(":#############");
+    const getMintedNFTs = async () => {
         const res = await axios.get(`https://deep-index.moralis.io/api/v2/nft/${CONTRACT_ADDRESS}?chain=rinkeby`, {
             headers: {
                 "Content-type": "application/json",
@@ -175,7 +193,7 @@ const Card = ({
             }
         })
 
-        setMintedCount(res.data.total);
+        setMintedNFTs(res.data);
     }
 
     const getBalanceShiburai = async () => {
@@ -184,13 +202,13 @@ const Card = ({
                 "Content-type": "application/json",
                 "X-API-Key": api_key
             }
-        })
+        });
         setBalanceShiburai(res.data.balance);
     }
 
     const getData = async () => {
         
-        await getMintedCount();
+        await getMintedNFTs();
 
         await getBalanceShiburai();
 
@@ -242,7 +260,7 @@ const Card = ({
                     color: "var(--accent-text)",
                 }}
             >
-                {mintedCount} / {MAX_SUPPLY}
+                {mintedNFTs ? mintedNFTs.total : 0} / {MAX_SUPPLY}
             </s.TextTitle>
             <s.TextTitle
                 style={{ textAlign: "center", color: "var(--accent-text)" }}
@@ -290,7 +308,7 @@ const Card = ({
                 </StyledButton>
             </span>
             <s.SpacerSmall />
-            {Number(mintedCount) >= MAX_SUPPLY ? (
+            {Number(mintedNFTs ? mintedNFTs.total : 0 ) >= MAX_SUPPLY ? (
                 <>
                     <s.TextTitle
                         style={{ textAlign: "center", color: "var(--accent-text)" }}
@@ -389,12 +407,12 @@ const Card = ({
                                 >
                                     {minting ? "BUSY" : connecting ? "Connecting" : "Mint"}
                                 </StyledButton>
-                                {freeMint ?
+                                {data.visibleFreeMint ?
                                     <StyledButton
-                                        disabled={minting ? 1 : 0}
+                                        disabled={(minting && !data.canClaimWithKimono) ? 1 : 0}
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            mintNFTs(true);
+                                            claimNFTs();
                                             getData();
                                         }}
                                     >
@@ -419,7 +437,7 @@ const Card = ({
                             <StyledButton
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    dispatch(connect(index));
+                                    dispatch(connect(index, api_key));
                                     getData();
                                 }}
                             >
