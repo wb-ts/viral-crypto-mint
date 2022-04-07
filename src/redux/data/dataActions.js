@@ -24,20 +24,20 @@ const fetchDataFailed = (payload) => {
 
 
 
-export const fetchData = () => {
+export const fetchData = (account , smartContract) => {
+  console.log(smartContract);
   return async (dispatch) => {
     dispatch(fetchDataRequest());
     try {
-      let blockchain = await store.getState().blockchain;
 
-      let minted = await blockchain.smartContract.methods.totalSupply();
-      let canClaimWithKimono = await blockchain.smartContract.methods.canClaimWithKimono(0 , blockchain.account);
-      let shiburaiDiscountAtAmount = Number(await blockchain.smartContract.methods.shiburaiDiscountAtAmount().call());
+      let minted = await smartContract.methods.totalSupply();
+      let canClaimWithKimono = await smartContract.methods.canClaimWithKimono(0 , account);
+      let shiburaiDiscountAtAmount = Number(await smartContract.methods.shiburaiDiscountAtAmount().call());
       let reverted = false;
 
-      let proof = await getProof(blockchain.account);
+      let proof = await getProof(account);
 
-      blockchain.smartContract.methods
+      smartContract.methods
       .claim(proof)
       .call()
       .then( (res) =>{
@@ -50,6 +50,7 @@ export const fetchData = () => {
 
       dispatch(
         fetchDataSuccess({
+          ...
           minted,
           canClaimWithKimono,
           shiburaiDiscountAtAmount,

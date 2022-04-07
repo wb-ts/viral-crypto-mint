@@ -2,6 +2,7 @@ const initialState = {
   loading: false,
   minted: 0,
   canClaimWithKimono: false,
+  kimono_id: '',
   shiburaiDiscountAtAmount: 0,
   reverted: false,
   error: false,

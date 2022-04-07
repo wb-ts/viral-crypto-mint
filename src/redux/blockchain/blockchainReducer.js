@@ -1,7 +1,9 @@
 const initialState = {
   loading: false,
   account: null,
-  smartContract: null,
+  smartContract_Kimono: null,
+  smartContract_Kabuto: null,
+  smartContract_Katana: null,
   web3: null,
   errorMsg: "",
 };
@@ -14,11 +16,25 @@ const blockchainReducer = (state = initialState, action) => {
         loading: true,
       };
     case "CONNECTION_SUCCESS":
-      return {
+      if(action.payload.smartContract_Kimono) return {
         ...state,
         loading: false,
         account: action.payload.account,
-        smartContract: action.payload.smartContract,
+        smartContract_Kimono: action.payload.smartContract_Kimono,
+        web3: action.payload.web3,
+      };
+      if(action.payload.smartContract_Katana) return {
+        ...state,
+        loading: false,
+        account: action.payload.account,
+        smartContract_Katana: action.payload.smartContract_Katana,
+        web3: action.payload.web3,
+      };
+      if(action.payload.smartContract_Kabuto) return {
+        ...state,
+        loading: false,
+        account: action.payload.account,
+        smartContract_Kabuto: action.payload.smartContract_Kabuto,
         web3: action.payload.web3,
       };
     case "CONNECTION_FAILED":

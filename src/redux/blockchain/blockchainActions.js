@@ -100,13 +100,38 @@ export const connect = (index) => {
           abi,
           CONFIG[index].CONTRACT_ADDRESS
         );
-        dispatch(
-          connectSuccess({
-            account: accounts[0],
-            smartContract: SmartContractObj,
-            web3: web3,
-          })
-        );
+        switch (CONFIG[index].SYMBOL) {
+          case "Kimono":
+            dispatch(
+              connectSuccess({
+                account: accounts[0],
+                smartContract_Kimono: SmartContractObj,
+                web3: web3,
+              })
+            );
+            break;
+          case "Katana":
+            dispatch(
+              connectSuccess({
+                account: accounts[0],
+                smartContract_Katana: SmartContractObj,
+                web3: web3,
+              })
+            );
+            break;
+          case "Kabuto":
+            dispatch(
+              connectSuccess({
+                account: accounts[0],
+                smartContract_Kabuto: SmartContractObj,
+                web3: web3,
+              })
+            );
+            break;
+          default:
+            break;
+        }
+        
         // Add listeners start
         ethereum.on("accountsChanged", (accounts) => {
           dispatch(updateAccount(accounts[0]));

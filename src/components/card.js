@@ -79,23 +79,23 @@ export const StyledLink = styled.a`
   text-decoration: none;
 `;
 
-const Card = ({ 
-    CONFIG: { 
-        CONTRACT_ADDRESS, 
-        SCAN_LINK, 
-        MARKETPLACE, 
-        MARKETPLACE_LINK, 
-        NETWORK, 
-        NFT_NAME, 
-        GAS_LIMIT, 
-        MEDIA, 
-        SYMBOL, 
-        MAX_SUPPLY, 
-        WEI_COST, 
-        DISPLAY_COST 
-    }, 
-    index, 
-    api_key ,
+const Card = ({
+    CONFIG: {
+        CONTRACT_ADDRESS,
+        SCAN_LINK,
+        MARKETPLACE,
+        MARKETPLACE_LINK,
+        NETWORK,
+        NFT_NAME,
+        GAS_LIMIT,
+        MEDIA,
+        SYMBOL,
+        MAX_SUPPLY,
+        WEI_COST,
+        DISPLAY_COST
+    },
+    index,
+    api_key,
     shiburaiContractAddress }) => {
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
@@ -104,24 +104,22 @@ const Card = ({
     const [mintAmount, setMintAmount] = useState(1);
     const [balanceShiburai, setBalanceShiburai] = useState(0);
     const [minting, setMinting] = useState(false);
+    const [connecting, setConnecting] = useState(false);
     const [freeMint, seetFreeMint] = useState(false);
     const [mintedCount, setMintedCount] = useState(null);
 
-    const mintNFTs = (nftID, free = false) => {
-        let cost;
-        if (nftID == 0) {
-            cost = WEI_COST;
-        }
+    const mintNFTs = (free = false) => {
+        
         let gasLimit = GAS_LIMIT;
-        let totalCostWei = free ? 0 : cost * mintAmount;
+        let totalCostWei = free ? 0 : WEI_COST * mintAmount;
         if (balanceShiburai > data.shiburaiDiscountAtAmount) totalCostWei / 2;
         let totalGasLimit = String(gasLimit);
-        console.log("Cost: ", totalCostWei);
+        console.log("Cost: ", String(totalCostWei));
         console.log("Gas limit: ", totalGasLimit);
         setFeedback(`Minting your ${NFT_NAME}...`);
         setMinting(true);
-        blockchain.smartContract.methods
-            .mintPublic(free ? 1 : mintAmount)
+        blockchain[`smartContract_${SYMBOL}`].methods
+            .mintPublic(mintAmount)
             .send({
                 gasLimit: String(totalGasLimit),
                 to: CONTRACT_ADDRESS,
@@ -133,19 +131,20 @@ const Card = ({
                 setFeedback("Sorry, something went wrong please try again later.");
                 setMinting(false);
             })
-            .then((receipt) => {
+            .then(async (receipt) => {
                 console.log(receipt);
                 setFeedback(
                     `WOW, the ${NFT_NAME} is yours! go visit Opensea.io to view it.`
                 );
-                seetFreeMint(true);
+                // seetFreeMint(true);
+                await getMintedCount();
                 setMinting(false);
                 dispatch(fetchData(blockchain.account));
                 setMintAmount(1);
             });
     };
-    const claimNFTs = () => {
-        
+    const freeMintNFTs = () => {
+
     }
 
     const decrementMintAmount = () => {
@@ -167,9 +166,9 @@ const Card = ({
         setMintAmount(newMintAmount);
     };
 
-    const getData = async () => {
-
-        let res = await axios.get(`https://deep-index.moralis.io/api/v2/nft/${CONTRACT_ADDRESS}`, {
+    const getMintedCount = async () => {
+        console.log(":#############");
+        const res = await axios.get(`https://deep-index.moralis.io/api/v2/nft/${CONTRACT_ADDRESS}?chain=rinkeby`, {
             headers: {
                 "Content-type": "application/json",
                 "X-API-Key": api_key
@@ -177,27 +176,34 @@ const Card = ({
         })
 
         setMintedCount(res.data.total);
+    }
 
-        res = await axios.get(`https://deep-index.moralis.io/api/v2/${shiburaiContractAddress}/balance?chain=rinkeby`, {
+    const getBalanceShiburai = async () => {
+        const res = await axios.get(`https://deep-index.moralis.io/api/v2/${shiburaiContractAddress}/balance?chain=rinkeby`, {
             headers: {
                 "Content-type": "application/json",
                 "X-API-Key": api_key
             }
         })
         setBalanceShiburai(res.data.balance);
+    }
 
+    const getData = async () => {
+        
+        await getMintedCount();
 
-        // res = await web3.contract.claim(res.data.proof).call();
+        await getBalanceShiburai();
 
-        // dispatch(callClaim(res.data.proof));
-
-        if (blockchain.account !== "" && blockchain.smartContract !== null) {
-            dispatch(fetchData(blockchain.account));
+        if (blockchain.account && blockchain[`smartContract_${SYMBOL}`] ) {
+            console.log("dispatch(fetchData(blockchain.account ));"  );
+            dispatch(fetchData(blockchain.account , blockchain[`smartContract_${SYMBOL}`] ));
         }
     };
 
-    useEffect(() => {
-        getData();
+    useEffect(async() => {
+        setConnecting(true);
+        await getData();
+        setConnecting(false);
     }, [blockchain.account]);
 
 
@@ -304,42 +310,7 @@ const Card = ({
             ) : (
                 <>
                     <s.SpacerSmall />
-                    {blockchain.account === "" ||
-                        blockchain.smartContract === null ? (
-                        <s.Container ai={"center"} jc={"center"}>
-                            <s.TextDescription
-                                style={{
-                                    textAlign: "center",
-                                    color: "var(--accent-text)",
-                                }}
-                            >
-                                Connect wallet to obtain Shiburai NFT
-                            </s.TextDescription>
-                            <s.SpacerSmall />
-                            <StyledButton
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    dispatch(connect(index));
-                                    getData();
-                                }}
-                            >
-                                CONNECT
-                            </StyledButton>
-                            {blockchain.errorMsg !== "" ? (
-                                <>
-                                    <s.SpacerSmall />
-                                    <s.TextDescription
-                                        style={{
-                                            textAlign: "center",
-                                            color: "var(--accent-text)",
-                                        }}
-                                    >
-                                        {blockchain.errorMsg}
-                                    </s.TextDescription>
-                                </>
-                            ) : null}
-                        </s.Container>
-                    ) : (
+                    {(blockchain.account && blockchain[`smartContract_${SYMBOL}`]) ? (
                         <>
                             <s.TextDescription
                                 style={{
@@ -412,27 +383,62 @@ const Card = ({
                                     disabled={minting ? 1 : 0}
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        mintNFTs(0);
+                                        mintNFTs();
                                         getData();
                                     }}
                                 >
-                                    {minting ? "BUSY" : "Mint"}
+                                    {minting ? "BUSY" : connecting ? "Connecting" : "Mint"}
                                 </StyledButton>
                                 {freeMint ?
                                     <StyledButton
                                         disabled={minting ? 1 : 0}
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            mintNFTs(0, true);
+                                            mintNFTs(true);
                                             getData();
                                         }}
                                     >
-                                        {minting ? "BUSY" : "Free Mint"}
+                                        {minting ? "BUSY" : connecting ? "Connecting" : "Free Mint"}
                                     </StyledButton>
                                     : ""
                                 }
                             </s.Container>
                         </>
+
+                    ) : (
+                        <s.Container ai={"center"} jc={"center"}>
+                            <s.TextDescription
+                                style={{
+                                    textAlign: "center",
+                                    color: "var(--accent-text)",
+                                }}
+                            >
+                                Connect wallet to obtain Shiburai NFT
+                            </s.TextDescription>
+                            <s.SpacerSmall />
+                            <StyledButton
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    dispatch(connect(index));
+                                    getData();
+                                }}
+                            >
+                                CONNECT
+                            </StyledButton>
+                            {blockchain.errorMsg !== "" ? (
+                                <>
+                                    <s.SpacerSmall />
+                                    <s.TextDescription
+                                        style={{
+                                            textAlign: "center",
+                                            color: "var(--accent-text)",
+                                        }}
+                                    >
+                                        {blockchain.errorMsg}
+                                    </s.TextDescription>
+                                </>
+                            ) : null}
+                        </s.Container>
                     )}
                 </>
             )}
