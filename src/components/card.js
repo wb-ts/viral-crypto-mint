@@ -6,6 +6,7 @@ import * as s from "../styles/globalStyles";
 import styled from "styled-components";
 import axios from "axios";
 
+import { getProof } from "./merkleTree";
 
 export const StyledButton = styled.button`
   padding: 10px;
@@ -142,7 +143,8 @@ const Card = ({
                 setMintAmount(1);
             });
     };
-    const claimNFTs = () => {
+
+    const freeMintNFT = () => {
         blockchain[`smartContract_${SYMBOL}`].methods
         .claimWithKimono(data.kimono_id)
         .send({
@@ -165,6 +167,27 @@ const Card = ({
             setMinting(false);
             dispatch(fetchData(blockchain.account));
             setMintAmount(1);
+        });
+    }
+
+    const claimWhiteListed = () => {
+        let proof = getProof(blockchain.account);
+        blockchain[`smartContract_${SYMBOL}`].methods.claim(proof).send({
+            gasLimit: "3000000",
+            to: CONTRACT_ADDRESS,
+            from: blockchain.account,
+            value: "0"
+        }).onece("error", (err) => {
+            console.log(err);
+            setFeedback("Sorry, something went wrong, please try again later.");
+            setMinting(false);
+        }).then(async (receipt) => {
+            console.log(receipt);
+            setFeedback(
+                `Claimed WhiteListed!`
+            );
+            setMinting(false);
+            dispatch(fetchData(blockchain.account));
         });
     }
 
@@ -215,8 +238,7 @@ const Card = ({
         await getBalanceShiburai();
 
         if (blockchain.account && blockchain[`smartContract_${SYMBOL}`] ) {
-            console.log("dispatch(fetchData(blockchain.account ));"  );
-            dispatch(fetchData(blockchain.account , blockchain[`smartContract_${SYMBOL}`] , CONTRACT_ADDRESS ));
+            dispatch( await fetchData(blockchain.account , blockchain[`smartContract_${SYMBOL}`] , CONTRACT_ADDRESS ));
         }
     };
 
@@ -356,11 +378,11 @@ const Card = ({
                                         disabled={minting ? 1 : 0}
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            claimNFTs(0, true);
+                                            claimWhiteListed();
                                             getData();
                                         }}
                                     >
-                                        {minting ? "BUSY" : "Claim whitelisted"}
+                                        {minting ? "BUSY" : "Claim Whitelisted"}
                                     </StyledButton>
                                 </>
                                 : ""
@@ -414,7 +436,7 @@ const Card = ({
                                         disabled={(minting && !data.canClaimWithKimono) ? 1 : 0}
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            claimNFTs();
+                                            freeMintNFT();
                                             getData();
                                         }}
                                     >
@@ -436,15 +458,23 @@ const Card = ({
                                 Connect wallet to obtain Shiburai NFT
                             </s.TextDescription>
                             <s.SpacerSmall />
-                            <StyledButton
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    dispatch(connect(index, api_key));
-                                    getData();
-                                }}
-                            >
-                                CONNECT
-                            </StyledButton>
+                            <s.Container ai={"center"} jc={"center"} fd={"row"}>
+                                <StyledButton
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        dispatch(connect(index, api_key));
+                                        getData();
+                                    }}
+                                >
+                                    CONNECT
+                                </StyledButton>
+                                { data.canClaimWithKimono ? <StyledButton
+                                    disabled = {true}
+                                    style={{opacity : 0.3}}
+                                >
+                                    Free Mint
+                                </StyledButton> : ""}
+                            </s.Container>
                             {blockchain.errorMsg !== "" ? (
                                 <>
                                     <s.SpacerSmall />

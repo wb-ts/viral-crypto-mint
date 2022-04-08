@@ -140,16 +140,11 @@ export const connect = (index, api_key) => {
               "X-API-Key": api_key
           }
           })
-          console.log("connect - moralis", res.data , accounts[0] , SmartContractObj);
         let canClaimWithKimono = false , Kimono_id = -1 ;
         for( let i = 0; i < res.data.total ; i ++ ) {
           if( res.data.result[i].name == "Kimono" ) {
-            console.log("Kimono", res.data.result[i].token_id , res.data.result[i].owner_of);
-            // let res = true;
-            let resde = await SmartContractObj.methods.canClaimWithKimono(res.data.result[i].token_id , res.data.result[i].owner_of).call();
-            console.log("res",resde);
-            if( resde == true ) {
-              canClaimWithKimono = true;
+            canClaimWithKimono = await SmartContractObj.methods.canClaimWithKimono(res.data.result[i].token_id , res.data.result[i].owner_of).call();
+            if( canClaimWithKimono == true ) {
               Kimono_id = res.data.result[i].token_id;
               dispatch(
                 fetchDataSuccessInBlockchain({
@@ -157,7 +152,6 @@ export const connect = (index, api_key) => {
                   Kimono_id
                 })
               );
-              console.log("Yes",Kimono_id);
               i = res.data.total;
             }
           }

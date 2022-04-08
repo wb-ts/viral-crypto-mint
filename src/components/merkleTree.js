@@ -13,7 +13,7 @@ let specialAddresses = [
   "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
   "0x1C1A902D6EB72dd6a7c49C45c3613d4E7445C349",
   "0x741700dd5dbd471ff8a976671fa1d0e470ec953f",
-  "0x29AC8c2e77640E14D34A2DB64AE3DCC182091E95"
+  "0x29AC8c2e77640E14D34A2DB64AE3DCC182091E95",
 ];
 const initialLength = specialAddresses.length;
 for (let i = 1; i <= 500; i++) {

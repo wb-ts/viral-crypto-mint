@@ -4,7 +4,7 @@ const initialState = {
   Kimono_id: -1 ,
   minted: 0,
   shiburaiDiscountAtAmount: 0,
-  reverted: false,
+  reverted: true,
   error: false,
   errorMsg: "",
 };
