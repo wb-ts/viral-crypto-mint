@@ -32,29 +32,34 @@ const fetchDataFailed = (payload) => {
 
 
 
-export const fetchData = async (account , smartContract , CONTRACT_ADDRESS) => {
+export const fetchData = async (account) => {
   return async (dispatch) => {
     dispatch(fetchDataRequest());
     try {
+      const blockchain = store.getState().blockchain;
 
-      let minted = Number(await smartContract.methods.totalSupply().call());
-      let shiburaiDiscountAtAmount = Number(await smartContract.methods.shiburaiDiscountAtAmount().call());
+      // const minted_Kimono = Number(await blockchain.smartContract_Kimono.methods.totalSupply().call());
+      // const minted_Kabuto = Number(await blockchain.smartContract_Kabuto.methods.totalSupply().call());
+      // const minted_Katana = Number(await blockchain.smartContract_Katana.methods.totalSupply().call());
+      const shiburaiDiscountAtAmount_Kimono = Number(await blockchain.smartContract_Kimono.methods.shiburaiDiscountAtAmount().call());
+      const shiburaiDiscountAtAmount_Kabuto = Number(await blockchain.smartContract_Kabuto.methods.shiburaiDiscountAtAmount().call());
+      const shiburaiDiscountAtAmount_Katana = Number(await blockchain.smartContract_Katana.methods.shiburaiDiscountAtAmount().call());
 
-      let proof = await getProof(account);
-      let reverted = true;
-      smartContract.methods.claim(proof).send({
-        gasLimit: "3000000",
-        to: CONTRACT_ADDRESS,
-        from: account,
-        value: "0"
-      });
-      let isPaused =await smartContract.methods.isPaused().call();
-      reverted = -isPaused ;
+      const proof = await getProof(account);
+      const reverted_Kimono = blockchain.smartContract_Kimono.methods.verifyClaim(account, proof).call();
+      const reverted_Kabuto = blockchain.smartContract_Kabuto.methods.verifyClaim(account, proof).call();
+      const reverted_Katana = blockchain.smartContract_Katana.methods.verifyClaim(account, proof).call();
       dispatch(
         fetchDataSuccessInData({
-          minted,
-          shiburaiDiscountAtAmount,
-          reverted
+          // minted_Kimono,
+          // minted_Kabuto,
+          // minted_Katana,
+          shiburaiDiscountAtAmount_Kimono,
+          shiburaiDiscountAtAmount_Kabuto,
+          shiburaiDiscountAtAmount_Katana,
+          reverted_Kimono,
+          reverted_Kabuto,
+          reverted_Katana
         })
       );
     } catch (err) {

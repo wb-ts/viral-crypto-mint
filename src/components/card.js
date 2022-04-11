@@ -97,19 +97,26 @@ const Card = ({
     },
     index,
     api_key,
-    shiburaiContractAddress }) => {
+    shiburaiContractAddress,
+    getData,
+    countOwnMintedKimonoNFT }) => {
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
-    const data = useSelector((state) => state.data);
+    const data = useSelector((state) => state["data"]);
     const [feedback, setFeedback] = useState(`Click Mint below to obtain your Sentinel NFT.`);
     const [mintAmount, setMintAmount] = useState(1);
     const [balanceShiburai, setBalanceShiburai] = useState(0);
     const [minting, setMinting] = useState(false);
     const [connecting, setConnecting] = useState(false);
-    const [mintedNFTs, setMintedNFTs] = useState(null);
+    const [mintedNFTs, setMintedNFTs] = useState(0);
 
     const mintNFTs = () => {
-        
+
+        if(SYMBOL === "Kimono" && mintedNFTs >= 2) {
+            setFeedback("Sorry , you can't mint more than 2 Kimonos.");
+            return;
+        }
+
         let gasLimit = GAS_LIMIT;
         let totalCostWei = WEI_COST * mintAmount;
         if (balanceShiburai > data.shiburaiDiscountAtAmount) totalCostWei / 2;
@@ -139,12 +146,18 @@ const Card = ({
                 // seetFreeMint(true);
                 await getMintedNFTs();
                 setMinting(false);
-                dispatch(fetchData(blockchain.account));
+                dispatch(await fetchData(blockchain.account));
                 setMintAmount(1);
             });
     };
 
     const freeMintNFT = () => {
+
+        if(SYMBOL === "Kimono" && mintedNFTs >= 2) {
+            setFeedback("Sorry , you can't mint more than 2 Kimonos.");
+            return;
+        }
+
         blockchain[`smartContract_${SYMBOL}`].methods
         .claimWithKimono(data.kimono_id)
         .send({
@@ -165,7 +178,6 @@ const Card = ({
             );
             await getMintedNFTs();
             setMinting(false);
-            dispatch(fetchData(blockchain.account));
             setMintAmount(1);
         });
     }
@@ -187,7 +199,6 @@ const Card = ({
                 `Claimed WhiteListed!`
             );
             setMinting(false);
-            dispatch(fetchData(blockchain.account));
         });
     }
 
@@ -204,8 +215,8 @@ const Card = ({
         if (newMintAmount > 2 && SYMBOL == "Kimono") {
             newMintAmount = 2;
         }
-        if (newMintAmount > MAX_SUPPLY - mintedNFTs.total) {
-            newMintAmount = MAX_SUPPLY - mintedNFTs.total;
+        if (newMintAmount > MAX_SUPPLY - mintedNFTs) {
+            newMintAmount = MAX_SUPPLY - mintedNFTs;
         }
         setMintAmount(newMintAmount);
     };
@@ -219,6 +230,7 @@ const Card = ({
         })
 
         setMintedNFTs(res.data);
+        return res.data;
     }
 
     const getBalanceShiburai = async () => {
@@ -231,23 +243,10 @@ const Card = ({
         setBalanceShiburai(res.data.balance);
     }
 
-    const getData = async () => {
-        
-        await getMintedNFTs();
-
+    useEffect(async ()=> {
+        let mintedNFTS = await getMintedNFTs();
         await getBalanceShiburai();
-
-        if (blockchain.account && blockchain[`smartContract_${SYMBOL}`] ) {
-            dispatch( await fetchData(blockchain.account , blockchain[`smartContract_${SYMBOL}`] , CONTRACT_ADDRESS ));
-        }
-    };
-
-    useEffect(async() => {
-        setConnecting(true);
-        await getData();
-        setConnecting(false);
-    }, [blockchain.account]);
-
+    },[]);
 
     const truncate = (input, len) => input.length > len ? `${input.substring(0, len)}...` : input;
 
@@ -290,7 +289,7 @@ const Card = ({
                 style={{ textAlign: "center", color: "var(--accent-text)" }}
             >
                 {
-                    balanceShiburai > data.shiburaiDiscountAtAmount ?
+                    balanceShiburai > data[`shiburaiDiscountAtAmount_${SYMBOL}`] ?
                         <>{DISPLAY_COST / 2}{" "}{NETWORK.SYMBOL} Each <span style={{ color: "red" }}>50% off</span> </>
                         :
                         `${DISPLAY_COST} ${NETWORK.SYMBOL} Each`
@@ -332,7 +331,7 @@ const Card = ({
                 </StyledButton>
             </span>
             <s.SpacerSmall />
-            {Number(mintedNFTs ? mintedNFTs.total : 0 ) >= MAX_SUPPLY ? (
+            {(Number(mintedNFTs ? mintedNFTs.total : 0 ) >= MAX_SUPPLY ) || (countOwnMintedKimonoNFT >= 2 && SYMBOL == "Kimono" && blockchain.account) ? (
                 <>
                     <s.TextTitle
                         style={{ textAlign: "center", color: "var(--accent-text)" }}
@@ -429,7 +428,7 @@ const Card = ({
                                         getData();
                                     }}
                                 >
-                                    {minting ? "BUSY" : connecting ? "Connecting" : "Mint"}
+                                    {minting ? "BUSY" : "Mint"}
                                 </StyledButton>
                                 {data.canClaimWithKimono ?
                                     <StyledButton
@@ -440,7 +439,7 @@ const Card = ({
                                             getData();
                                         }}
                                     >
-                                        {minting ? "BUSY" : connecting ? "Connecting" : "Free Mint"}
+                                        {minting ? "BUSY" : "Free Mint"}
                                     </StyledButton>
                                     : ""
                                 }
@@ -457,24 +456,6 @@ const Card = ({
                             >
                                 Connect wallet to obtain Shiburai NFT
                             </s.TextDescription>
-                            <s.SpacerSmall />
-                            <s.Container ai={"center"} jc={"center"} fd={"row"}>
-                                <StyledButton
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        dispatch(connect(index, api_key));
-                                        getData();
-                                    }}
-                                >
-                                    CONNECT
-                                </StyledButton>
-                                { data.canClaimWithKimono ? <StyledButton
-                                    disabled = {true}
-                                    style={{opacity : 0.3}}
-                                >
-                                    Free Mint
-                                </StyledButton> : ""}
-                            </s.Container>
                             {blockchain.errorMsg !== "" ? (
                                 <>
                                     <s.SpacerSmall />

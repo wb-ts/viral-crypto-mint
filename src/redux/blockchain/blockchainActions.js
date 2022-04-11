@@ -62,7 +62,7 @@ export const switchNetwork = async () => {
   }
 }
 
-export const connect = (index, api_key) => {
+export const connect = (api_key) => {
   return async (dispatch) => {
     dispatch(connectRequest());
     const configResponse = await fetch("/config/config.json", {
@@ -72,14 +72,27 @@ export const connect = (index, api_key) => {
       },
     });
     const CONFIG = await configResponse.json();
-    const abiResponse = await fetch(`/config/${CONFIG[index].SYMBOL}_abi.json`, {
+    const abiResponse = await fetch(`/config/kimono_abi.json`, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
     });
-    const abi = await abiResponse.json();
-
+    const abi_kimono = await abiResponse.json();
+    const abiResponse_kabuto = await fetch(`/config/kabuto_abi.json`, {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+    const abi_kabuto = await abiResponse_kabuto.json();
+    const abiResponse_katana = await fetch(`/config/katana_abi.json`, {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+    const abi_katana = await abiResponse_katana.json();
     const { ethereum } = window;
 
     const metamaskIsInstalled = ethereum && ethereum.isMetaMask;
@@ -94,43 +107,29 @@ export const connect = (index, api_key) => {
           method: "net_version",
         });
 
-        if (networkId != CONFIG[index].NETWORK.ID) await switchNetwork();
+        if (networkId != 4) await switchNetwork();
 
-        const SmartContractObj = new Web3EthContract(
-          abi,
-          CONFIG[index].CONTRACT_ADDRESS
+        const SmartContractObj_Kimono = new Web3EthContract(
+          abi_kimono,
+          CONFIG[0].CONTRACT_ADDRESS
         );
-        switch (CONFIG[index].SYMBOL) {
-          case "Kimono":
-            dispatch(
-              connectSuccess({
-                account: accounts[0],
-                smartContract_Kimono: SmartContractObj,
-                web3: web3,
-              })
-            );
-            break;
-          case "Katana":
-            dispatch(
-              connectSuccess({
-                account: accounts[0],
-                smartContract_Katana: SmartContractObj,
-                web3: web3,
-              })
-            );
-            break;
-          case "Kabuto":
-            dispatch(
-              connectSuccess({
-                account: accounts[0],
-                smartContract_Kabuto: SmartContractObj,
-                web3: web3,
-              })
-            );
-            break;
-          default:
-            break;
-        }
+        const SmartContractObj_Katana = new Web3EthContract(
+          abi_kabuto,
+          CONFIG[1].CONTRACT_ADDRESS
+        );
+        const SmartContractObj_Kabuto = new Web3EthContract(
+          abi_katana,
+          CONFIG[2].CONTRACT_ADDRESS
+        );
+        dispatch(
+          connectSuccess({
+            account: accounts[0],
+            smartContract_Kimono: SmartContractObj_Kimono,
+            smartContract_Katana: SmartContractObj_Katana,
+            smartContract_Kabuto: SmartContractObj_Kabuto,
+            web3: web3,
+          })
+        );
 
         // Getting Owned Kimino NFTs
 
@@ -143,7 +142,7 @@ export const connect = (index, api_key) => {
         let canClaimWithKimono = false , Kimono_id = -1 ;
         for( let i = 0; i < res.data.total ; i ++ ) {
           if( res.data.result[i].name == "Kimono" ) {
-            canClaimWithKimono = await SmartContractObj.methods.canClaimWithKimono(res.data.result[i].token_id , res.data.result[i].owner_of).call();
+            canClaimWithKimono = await SmartContractObj_Kimono.methods.canClaimWithKimono(res.data.result[i].token_id , res.data.result[i].owner_of).call();
             if( canClaimWithKimono == true ) {
               Kimono_id = res.data.result[i].token_id;
               dispatch(
@@ -180,7 +179,7 @@ export const connect = (index, api_key) => {
 
 export const updateAccount = (account) => {
   return async (dispatch) => {
-    dispatch(updateAccountRequest({ account: account }));
-    dispatch(fetchData(account));
+    dispatch(updateAccountRequest(account));
+    dispatch(await fetchData(account));
   };
 };
