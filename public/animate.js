@@ -17,6 +17,7 @@ function transforms(x, y, el) {
 }
 
 mouseOverContainer.onmousemove = function(e) {
+  if(window.innerWidth <= 760) return;
   let xy = [e.clientX, e.clientY];
   let position = xy.concat([ex1Layer]);
 
