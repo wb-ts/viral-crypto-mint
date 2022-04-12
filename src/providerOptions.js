@@ -22,7 +22,7 @@ export const providerOptions = {
           "metamask",
           "trust",
         ]
-    }
-    
+    },
+    chainId : "4"
   }
 };
