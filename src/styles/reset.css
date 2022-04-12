@@ -167,3 +167,8 @@ div {
   user-select: none;
   -o-user-select: none;
 }
+
+.web3modal-modal-card {
+  position: absolute;
+  z-index: 10000;
+}

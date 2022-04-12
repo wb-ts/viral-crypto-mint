@@ -2,18 +2,8 @@
 import Web3EthContract from "web3-eth-contract";
 import Web3 from "web3";
 import axios from "axios";
-
-import Web3Modal from 'web3modal';
-import { providerOptions } from "./providerOptions";
-import { ethers } from "ethers";
-
 // log
 import { fetchData , fetchDataSuccessInBlockchain } from "../data/dataActions";
-
-const web3Modal = new Web3Modal({
-  cacheProvider: true, // optional
-  providerOptions // required
-});
 
 const connectRequest = () => {
   return {

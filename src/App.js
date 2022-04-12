@@ -20,6 +20,8 @@ const web3Modal = new Web3Modal({
 });
 
 export const StyledLogo = styled.img`
+  position: relative;
+  z-index: 2;
   width: 150px;
   @media (min-width: 767px) {
     width: 300px;
@@ -92,8 +94,10 @@ function App() {
   //web3modal implement
   const [provider, setProvider] = useState();
   const [library, setLibrary] = useState();
-  const [account, setAccount] = useState();
-  const [chainId, setChainId] = useState();
+  const [account, setAccount] = useState("");
+  const [chainId, setChainId] = useState("");
+  const [network, setNetwork] = useState();
+
   //web3modal implement
 
   const dispatch = useDispatch();
@@ -148,9 +152,9 @@ function App() {
       const library = new ethers.providers.Web3Provider(provider);
       const accounts = await library.listAccounts();
       const network = await library.getNetwork();
-      Web3EthContract.setProvider(library.provider);
       setProvider(provider);
       setLibrary(library);
+      await Web3EthContract.setProvider(library.provider);
       if(network.chainId != "4") await switchNetwork();
       if (accounts) setAccount(accounts[0]);
       setChainId(network.chainId);
@@ -160,8 +164,10 @@ function App() {
   }
   
   const refreshState = () => {
-    setAccount();
-    setChainId();
+    setProvider();
+    setLibrary();
+    setAccount("");
+    setChainId("");
   };
 
   const disconnect = async () => {
@@ -172,7 +178,7 @@ function App() {
   useEffect(async() => {
     await getConfig();
     if (web3Modal.cachedProvider) {
-      await connectWallet();
+      connectWallet();
     }
   }, []);
 

@@ -41,6 +41,9 @@ export const fetchData = async (account) => {
       // const minted_Kimono = Number(await blockchain.smartContract_Kimono.methods.totalSupply().call());
       // const minted_Kabuto = Number(await blockchain.smartContract_Kabuto.methods.totalSupply().call());
       // const minted_Katana = Number(await blockchain.smartContract_Katana.methods.totalSupply().call());
+
+      console.log("blockchain:",blockchain);
+
       const shiburaiDiscountAtAmount_Kimono = Number(await blockchain.smartContract_Kimono.methods.shiburaiDiscountAtAmount().call());
       const shiburaiDiscountAtAmount_Kabuto = Number(await blockchain.smartContract_Kabuto.methods.shiburaiDiscountAtAmount().call());
       const shiburaiDiscountAtAmount_Katana = Number(await blockchain.smartContract_Katana.methods.shiburaiDiscountAtAmount().call());
