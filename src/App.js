@@ -240,7 +240,7 @@ function App() {
         }}
       >
         <s.SpacerSmall />
-        {!blockchain.account ? <StyledButton onClick={()=>{connectWallet()}}> Connect </StyledButton>
+        {!account ? <StyledButton onClick={()=>{connectWallet()}}> Connect </StyledButton>
         :
         <div style={{
 
