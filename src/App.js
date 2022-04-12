@@ -245,7 +245,7 @@ function App() {
         <div style={{
 
         }}>
-          <Address>{blockchain.account.slice(0,6)}...{blockchain.account.slice(-3)}</Address>
+          <Address>{account.slice(0,6)}...{account.slice(-3)}</Address>
           <StyledButton style={{ background: "var(--secondary)" }} onClick={()=>{disconnect()}}>Disconnect</StyledButton>
         </div>
 
