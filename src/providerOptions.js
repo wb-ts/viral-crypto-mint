@@ -17,13 +17,7 @@ export const providerOptions = {
     options: {
       infuraId: process.env.REACT_APP_INFURA_KEY // required
     },
-    qrcode: true,
-    qrcodeModalOptions: {
-        mobileLinks: [
-          "metamask",
-          "trust",
-        ]
-    }
+    qrcode: true
     
   }
 };
