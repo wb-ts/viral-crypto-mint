@@ -20,7 +20,7 @@ const web3Modal = new Web3Modal({
 });
 
 export const StyledLogo = styled.img`
-  width: 240px;
+  width: 150px;
   @media (min-width: 767px) {
     width: 300px;
   }
