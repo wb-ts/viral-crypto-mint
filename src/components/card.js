@@ -159,7 +159,7 @@ const Card = ({
         }
 
         blockchain[`smartContract_${SYMBOL}`].methods
-        .claimWithKimono(data.kimono_id)
+        .claimWithKimono(data.Kimono_id)
         .send({
             gasLimit: "3000000",
             to: CONTRACT_ADDRESS,
