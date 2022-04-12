@@ -16,6 +16,13 @@ export const providerOptions = {
     package: WalletConnect, // required
     options: {
       infuraId: process.env.REACT_APP_INFURA_KEY // required
+    },
+    qrcodeModalOptions: {
+        mobileLinks: [
+          "metamask",
+          "trust",
+        ]
     }
+    
   }
 };
