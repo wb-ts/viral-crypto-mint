@@ -3,9 +3,21 @@ import { useDispatch, useSelector } from "react-redux";
 import * as s from "./styles/globalStyles";
 import styled from "styled-components";
 import Card from "./components/card";
-import { connect } from "./redux/blockchain/blockchainActions";
 import { fetchData } from "./redux/data/dataActions";
 import axios from "axios";
+
+require('dotenv').config();
+
+import { ethers } from "ethers";
+import Web3Modal from "web3modal";
+import Web3EthContract from 'web3-eth-contract';
+import { providerOptions } from "./providerOptions";
+import { connect } from "./redux/blockchain/blockchainActions";
+
+const web3Modal = new Web3Modal({
+  cacheProvider: true, // optional
+  providerOptions // required
+});
 
 export const StyledLogo = styled.img`
   width: 240px;
@@ -33,8 +45,8 @@ export const ResponsiveWrapper = styled.div`
 `;
 export const Address = styled.div`
   position: absolute;
-  right: 15px;
-  top: 15px;
+  top: 12px;
+  right: 130px;
   padding: 10px;
   margin: 5px;
   border-radius: 50px;
@@ -76,6 +88,14 @@ function App() {
   const [countOwnMintedKimonoNFT, setCountOwnMintedKimonoNFT] = useState(0);
   const MORALIS_API_KEY = 'bqFwTY0YKsKkGLPv7GpRm4Q3C6HRXBN2vZIe7NoHi2MQZwt6TlX6qt0WYsmFThLl';
   const shiburaiContractAddress = '0x92697e3aa182a4693Ab65bA3f8225D4f659dE65F';
+
+  //web3modal implement
+  const [provider, setProvider] = useState();
+  const [library, setLibrary] = useState();
+  const [account, setAccount] = useState();
+  const [chainId, setChainId] = useState();
+  //web3modal implement
+
   const dispatch = useDispatch();
 
   const getConfig = async () => {
@@ -90,16 +110,108 @@ function App() {
     SET_CONFIG(result);
     return result;
   };
-  const connectWallet = () => {
-    dispatch(connect(MORALIS_API_KEY));
+
+  //web3modal implement
+
+  const switchNetwork = async () => {
+    try {
+      await library.provider.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x4' }],
+      });
+    } catch (switchError) {
+      // This error code indicates that the chain has not been added to MetaMask.
+      if (switchError.code === 4902) {
+        try {
+          await library.provider.request({
+            method: 'wallet_addEthereumChain',
+            params: [
+              {
+                chainId: '0x4',
+                chainName: 'Rinkeby Test Network',
+                rpcUrls: ['https://rinkeby.infura.io/v3/'] /* ... */,
+              },
+            ],
+          });
+        } catch (addError) {
+          // handle "add" error
+          console.log(addError);
+        }
+      }
+      // handle other "switch" errors
+    }
+  };
+
+  const connectWallet = async () => {
+    try {
+      const provider = await web3Modal.connect();
+      const library = new ethers.providers.Web3Provider(provider);
+      const accounts = await library.listAccounts();
+      const network = await library.getNetwork();
+      Web3EthContract.setProvider(library.provider);
+      setProvider(provider);
+      setLibrary(library);
+      if(network.chainId != "4") await switchNetwork();
+      if (accounts) setAccount(accounts[0]);
+      setChainId(network.chainId);
+    } catch (error) {
+      console.log(error);
+    }
   }
+  
+  const refreshState = () => {
+    setAccount();
+    setChainId();
+  };
+
+  const disconnect = async () => {
+    await web3Modal.clearCachedProvider();
+    refreshState();
+  };
+
+  useEffect(async() => {
+    await getConfig();
+    if (web3Modal.cachedProvider) {
+      await connectWallet();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (provider?.on) {
+      const handleAccountsChanged = (accounts) => {
+        if (accounts) setAccount(accounts[0]);
+      };
+
+      const handleChainChanged = (_hexChainId) => {
+        setChainId(_hexChainId);
+      };
+      const handleDisconnect = () => {
+        console.log("disconnect", error);
+        disconnect();
+      };
+
+      provider.on("accountsChanged", handleAccountsChanged);
+      provider.on("chainChanged", handleChainChanged);
+      provider.on("disconnect", handleDisconnect);
+
+      return () => {
+        if (provider.removeListener) {
+          provider.removeListener("accountsChanged", handleAccountsChanged);
+          provider.removeListener("chainChanged", handleChainChanged);
+          provider.removeListener("disconnect", handleDisconnect);
+        }
+      };
+    }
+  }, [provider]);
+
+  //web3modal implement
 
   const getData = async () => {
-    dispatch(await fetchData(blockchain.account));
+    dispatch(await fetchData(account));
   };
 
   const getCountKimonoNFTs = async () => {
-    const res = await axios.get(`https://deep-index.moralis.io/api/v2/${blockchain.account}/nft/${CONFIG[0].CONTRACT_ADDRESS}?chain=rinkeby`, {
+    const res = await axios.get(`https://deep-index.moralis.io/api/v2/${account}/nft/${CONFIG[0].CONTRACT_ADDRESS}?chain=rinkeby`, {
       headers: {
         "Content-type": "application/json",
         "X-API-Key": MORALIS_API_KEY
@@ -107,15 +219,14 @@ function App() {
     })
     setCountOwnMintedKimonoNFT(res.data.total);
   }
-  useEffect(()=> {
-    getConfig();
-  })
   useEffect(async () => {
-    if (blockchain.account) {
+    await getConfig();
+    if (account) {
+      dispatch(await connect(account, MORALIS_API_KEY));
       await getCountKimonoNFTs();
       await getData();
     }
-  }, [blockchain.account]);
+  }, [account]);
 
   return (
     <s.Screen>
@@ -129,9 +240,15 @@ function App() {
         }}
       >
         <s.SpacerSmall />
-        {!blockchain.account ? <StyledButton onClick={connectWallet}> Connect </StyledButton>
+        {!blockchain.account ? <StyledButton onClick={()=>{connectWallet()}}> Connect </StyledButton>
         :
-        <Address>{blockchain.account.slice(0,6)}...{blockchain.account.slice(-3)}</Address>
+        <div style={{
+
+        }}>
+          <Address>{blockchain.account.slice(0,6)}...{blockchain.account.slice(-3)}</Address>
+          <StyledButton style={{ background: "var(--secondary)" }} onClick={()=>{disconnect()}}>Disconnect</StyledButton>
+        </div>
+
         }
         <a href={"/"}>
           <StyledLogo alt={"logo"} id="logo" src={"/config/images/logo.png"} />
@@ -163,6 +280,7 @@ function App() {
           {
             CONFIG.length && CONFIG.map((item, index) => {
               return <Card key={index}
+                account={account}
                 CONFIG={item}
                 index={index}
                 api_key={MORALIS_API_KEY}

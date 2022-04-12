@@ -2,8 +2,18 @@
 import Web3EthContract from "web3-eth-contract";
 import Web3 from "web3";
 import axios from "axios";
+
+import Web3Modal from 'web3modal';
+import { providerOptions } from "./providerOptions";
+import { ethers } from "ethers";
+
 // log
 import { fetchData , fetchDataSuccessInBlockchain } from "../data/dataActions";
+
+const web3Modal = new Web3Modal({
+  cacheProvider: true, // optional
+  providerOptions // required
+});
 
 const connectRequest = () => {
   return {
@@ -62,7 +72,7 @@ export const switchNetwork = async () => {
   }
 }
 
-export const connect = (api_key) => {
+export const connect = async(account, api_key) => {
   return async (dispatch) => {
     dispatch(connectRequest());
     const configResponse = await fetch("/config/config.json", {
@@ -93,87 +103,59 @@ export const connect = (api_key) => {
       },
     });
     const abi_katana = await abiResponse_katana.json();
-    const { ethereum } = window;
 
-    const metamaskIsInstalled = ethereum && ethereum.isMetaMask;
-    if (metamaskIsInstalled) {
-      Web3EthContract.setProvider(ethereum);
-      let web3 = new Web3(ethereum);
-      try {
-        const accounts = await ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        let networkId = await ethereum.request({
-          method: "net_version",
-        });
+    try {
 
-        if (networkId != 4) await switchNetwork();
+      const SmartContractObj_Kimono = new Web3EthContract(
+        abi_kimono,
+        CONFIG[0].CONTRACT_ADDRESS
+      );
+      const SmartContractObj_Katana = new Web3EthContract(
+        abi_kabuto,
+        CONFIG[1].CONTRACT_ADDRESS
+      );
+      const SmartContractObj_Kabuto = new Web3EthContract(
+        abi_katana,
+        CONFIG[2].CONTRACT_ADDRESS
+      );
+      dispatch(
+        connectSuccess({
+          account: account,
+          smartContract_Kimono: SmartContractObj_Kimono,
+          smartContract_Katana: SmartContractObj_Katana,
+          smartContract_Kabuto: SmartContractObj_Kabuto,
+        })
+      );
 
-        const SmartContractObj_Kimono = new Web3EthContract(
-          abi_kimono,
-          CONFIG[0].CONTRACT_ADDRESS
-        );
-        const SmartContractObj_Katana = new Web3EthContract(
-          abi_kabuto,
-          CONFIG[1].CONTRACT_ADDRESS
-        );
-        const SmartContractObj_Kabuto = new Web3EthContract(
-          abi_katana,
-          CONFIG[2].CONTRACT_ADDRESS
-        );
-        dispatch(
-          connectSuccess({
-            account: accounts[0],
-            smartContract_Kimono: SmartContractObj_Kimono,
-            smartContract_Katana: SmartContractObj_Katana,
-            smartContract_Kabuto: SmartContractObj_Kabuto,
-            web3: web3,
-          })
-        );
+      // Getting Owned Kimino NFTs
 
-        // Getting Owned Kimino NFTs
-
-        const res = await axios.get(`https://deep-index.moralis.io/api/v2/${accounts[0]}/nft?chain=rinkeby`, {
-          headers: {
-              "Content-type": "application/json",
-              "X-API-Key": api_key
-          }
-          })
-        let canClaimWithKimono = false , Kimono_id = -1 ;
-        for( let i = 0; i < res.data.total ; i ++ ) {
-          if( res.data.result[i].name == "Kimono" ) {
-            canClaimWithKimono = await SmartContractObj_Kimono.methods.canClaimWithKimono(res.data.result[i].token_id , res.data.result[i].owner_of).call();
-            if( canClaimWithKimono == true ) {
-              Kimono_id = res.data.result[i].token_id;
-              dispatch(
-                fetchDataSuccessInBlockchain({
-                  canClaimWithKimono,
-                  Kimono_id
-                })
-              );
-              i = res.data.total;
-            }
+      const res = await axios.get(`https://deep-index.moralis.io/api/v2/${account}/nft?chain=rinkeby`, {
+        headers: {
+            "Content-type": "application/json",
+            "X-API-Key": api_key
+        }
+        })
+      let canClaimWithKimono = false , Kimono_id = -1 ;
+      for( let i = 0; i < res.data.total ; i ++ ) {
+        if( res.data.result[i].name == "Kimono" ) {
+          canClaimWithKimono = await SmartContractObj_Kimono.methods.canClaimWithKimono(res.data.result[i].token_id , res.data.result[i].owner_of).call();
+          if( canClaimWithKimono == true ) {
+            Kimono_id = res.data.result[i].token_id;
+            dispatch(
+              fetchDataSuccessInBlockchain({
+                canClaimWithKimono,
+                Kimono_id
+              })
+            );
+            i = res.data.total;
           }
         }
-        
-        
-        
-        // Add listeners start
-        ethereum.on("accountsChanged", (accounts) => {
-          dispatch(updateAccount(accounts[0]));
-        });
-        ethereum.on("chainChanged", async () => {
-          networkId = await ethereum.request({
-            method: "net_version",
-          });
-          if( networkId !== "4") window.location.reload();
-        });
-      } catch (err) {
-        dispatch(connectFailed("Something went wrong."));
       }
-    } else {
-      dispatch(connectFailed("Install Metamask."));
+      
+    } catch (err) {
+      dispatch(connectFailed("Something went wrong."));
     }
+
   };
 };
 

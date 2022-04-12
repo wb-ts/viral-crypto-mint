@@ -81,6 +81,7 @@ export const StyledLink = styled.a`
 `;
 
 const Card = ({
+    account,
     CONFIG: {
         CONTRACT_ADDRESS,
         SCAN_LINK,
@@ -331,7 +332,7 @@ const Card = ({
                 </StyledButton>
             </span>
             <s.SpacerSmall />
-            {(Number(mintedNFTs ? mintedNFTs.total : 0 ) >= MAX_SUPPLY ) || (countOwnMintedKimonoNFT >= 2 && SYMBOL == "Kimono" && blockchain.account) ? (
+            {(Number(mintedNFTs ? mintedNFTs.total : 0 ) >= MAX_SUPPLY ) || (countOwnMintedKimonoNFT >= 2 && SYMBOL == "Kimono" && account) ? (
                 <>
                     <s.TextTitle
                         style={{ textAlign: "center", color: "var(--accent-text)" }}
@@ -351,7 +352,7 @@ const Card = ({
             ) : (
                 <>
                     <s.SpacerSmall />
-                    {(blockchain.account && blockchain[`smartContract_${SYMBOL}`]) ? (
+                    {(account && blockchain[`smartContract_${SYMBOL}`]) ? (
                         <>
                             <s.TextDescription
                                 style={{

@@ -4,7 +4,6 @@ const initialState = {
   smartContract_Kimono: null,
   smartContract_Kabuto: null,
   smartContract_Katana: null,
-  web3: null,
   errorMsg: "",
 };
 
@@ -23,7 +22,6 @@ const blockchainReducer = (state = initialState, action) => {
         smartContract_Kimono: action.payload.smartContract_Kimono,
         smartContract_Kabuto: action.payload.smartContract_Kabuto,
         smartContract_Katana: action.payload.smartContract_Katana,
-        web3: action.payload.web3,
       };
     case "CONNECTION_FAILED":
       return {
