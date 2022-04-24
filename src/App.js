@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import * as s from "./styles/globalStyles";
 import styled from "styled-components";
 import Card from "./components/card";
@@ -15,8 +15,16 @@ import { providerOptions } from "./providerOptions";
 import { connect } from "./redux/blockchain/blockchainActions";
 
 const web3Modal = new Web3Modal({
+  network: "rinkeby",
   cacheProvider: true, // optional
-  providerOptions // required
+  providerOptions, // required
+  theme: {
+    background: "var(--base)",
+    main: "rgb(199, 199, 199)",
+    secondary: "white",
+    border: "rgba(195, 195, 195, 0.14)",
+    hover: "var(--secondary)"
+  }
 });
 
 export const StyledLogo = styled.img`
@@ -84,9 +92,7 @@ export const StyledButton = styled.button`
 `;
 
 function App() {
-  const data = useSelector((state) => state["data"]);
   const [CONFIG, SET_CONFIG] = useState([]);
-  const blockchain = useSelector((state) => state.blockchain);
   const [countOwnMintedKimonoNFT, setCountOwnMintedKimonoNFT] = useState(0);
   const MORALIS_API_KEY = 'bqFwTY0YKsKkGLPv7GpRm4Q3C6HRXBN2vZIe7NoHi2MQZwt6TlX6qt0WYsmFThLl';
   const shiburaiContractAddress = '0x92697e3aa182a4693Ab65bA3f8225D4f659dE65F';
@@ -96,8 +102,7 @@ function App() {
   const [library, setLibrary] = useState();
   const [account, setAccount] = useState("");
   const [chainId, setChainId] = useState("");
-  const [network, setNetwork] = useState();
-
+  const [wallet, setWallet] = useState("");
   //web3modal implement
 
   const dispatch = useDispatch();
@@ -123,6 +128,7 @@ function App() {
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: '0x4' }],
       });
+      
     } catch (switchError) {
       // This error code indicates that the chain has not been added to MetaMask.
       if (switchError.code === 4902) {
@@ -137,16 +143,29 @@ function App() {
               },
             ],
           });
+          
+
         } catch (addError) {
           // handle "add" error
           console.log(addError);
         }
+        finally {
+          const accounts = await library.listAccounts();
+          setAccount(accounts[0]);
+          setChainId("4");
+        }
       }
       // handle other "switch" errors
+    }
+    finally {
+      const accounts = await library.listAccounts();
+      setAccount(accounts[0]);
+      setChainId("4");
     }
   };
 
   const connectWallet = async () => {
+    console.log("Clicked");
     try {
       const provider = await web3Modal.connect();
       const library = new ethers.providers.Web3Provider(provider);
@@ -154,25 +173,30 @@ function App() {
       const network = await library.getNetwork();
       setProvider(provider);
       setLibrary(library);
+      if(accounts && network.chainId == "4"){
+        setAccount(accounts[0]);
+        setChainId("4");
+      }  
       await Web3EthContract.setProvider(library.provider);
-      if(network.chainId != "4") await switchNetwork();
-      if (accounts) setAccount(accounts[0]);
-      setChainId(network.chainId);
     } catch (error) {
       console.log(error);
     }
   }
+  const changeWallet = async () => {
+
+  }
   
-  const refreshState = () => {
-    setProvider();
-    setLibrary();
-    setAccount("");
-    setChainId("");
-  };
+  // const refreshState = () => {
+  //   setProvider();
+  //   setLibrary();
+  //   setAccount("");
+  //   setChainId("");
+  // };
 
   const disconnect = async () => {
-    await web3Modal.clearCachedProvider();
-    refreshState();
+    web3Modal.clearCachedProvider();
+    // refreshState();
+    window.location.reload();
   };
 
   useEffect(async() => {
@@ -185,11 +209,13 @@ function App() {
   useEffect(() => {
     if (provider?.on) {
       const handleAccountsChanged = (accounts) => {
-        if (accounts) setAccount(accounts[0]);
+        // if (accounts) setAccount(accounts[0]);
+        refreshState();
       };
 
       const handleChainChanged = (_hexChainId) => {
-        setChainId(_hexChainId);
+        setChainId(String(_hexChainId).slice(2));
+        window.location.reload();
       };
       const handleDisconnect = () => {
         console.log("disconnect", error);
@@ -227,12 +253,13 @@ function App() {
   }
   useEffect(async () => {
     await getConfig();
-    if (account) {
+    console.log("ERERERER");
+    if (account && chainId == "4") {
       dispatch(await connect(account, MORALIS_API_KEY));
       await getCountKimonoNFTs();
       await getData();
     }
-  }, [account]);
+  }, [account,chainId]);
 
   return (
     <s.Screen>
@@ -246,15 +273,15 @@ function App() {
         }}
       >
         <s.SpacerSmall />
-        {!account ? <StyledButton onClick={()=>{connectWallet()}}> Connect </StyledButton>
-        :
-        <div style={{
-
-        }}>
-          <Address>{account.slice(0,6)}...{account.slice(-3)}</Address>
-          <StyledButton style={{ background: "var(--secondary)" }} onClick={()=>{disconnect()}}>Disconnect</StyledButton>
-        </div>
-
+        { library ? 
+          account?
+          <div>
+            <Address onClick={changeWallet}>{account.slice(0,6)}...{account.slice(-3)}</Address>
+            <StyledButton style={{ background: "var(--secondary)" }} onClick={disconnect}>Disconnect</StyledButton>
+          </div>
+          : <StyledButton style={{ background: "var(--secondary)" }} onClick={switchNetwork}>Switch Network</StyledButton>
+          :
+          <StyledButton onClick={connectWallet}> Connect </StyledButton>
         }
         <a href={"/"}>
           <StyledLogo alt={"logo"} id="logo" src={"/config/images/logo.png"} />

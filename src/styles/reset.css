@@ -171,4 +171,19 @@ div {
 .web3modal-modal-card {
   position: absolute;
   z-index: 10000;
+  width: 60vw;
+  display: block;
+  max-width: 400px;
+}
+.web3modal-provider-container {
+  display: flex;
+  flex-direction: row-reverse;
+}
+.web3modal-provider-description {
+  display: none;
+}
+.web3modal-provider-name {
+  text-align: left;
+  padding-left: 10px;
+  margin: auto;
 }

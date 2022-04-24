@@ -108,7 +108,6 @@ const Card = ({
     const [mintAmount, setMintAmount] = useState(1);
     const [balanceShiburai, setBalanceShiburai] = useState(0);
     const [minting, setMinting] = useState(false);
-    const [connecting, setConnecting] = useState(false);
     const [mintedNFTs, setMintedNFTs] = useState(0);
 
     const mintNFTs = () => {
